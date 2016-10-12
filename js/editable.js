@@ -13,7 +13,11 @@
 
         let type = options.type = options.type || this.data('type');
         this.state = this.state || STATE_DISABLE;
+        options.value = this.text() || this.attr('value') || options.value;
         this.inPlaceInput = this.inPlaceInput || new $ipe.types[type].InputConstructor(options);
+
+        this.text(this.inPlaceInput.value);
+
         this.css($ipe.style.linkText);
 
         let submit = () => {
@@ -33,7 +37,6 @@
         this.click(event => {
             if (STATE_DISABLE == this.state) {
                 this.inPlaceInput.inputForm.insertAfter(this);
-                this.inPlaceInput.value = this.text() || options.value;
                 this.hide();
                 this.inPlaceInput.inputField.focus();
 
@@ -95,6 +98,7 @@
                 btn.addClass(`btn-${this.size}`) }
             return btn }
         removeField() {};
+        initInputFieldValue() {}
         get value() { return this._value};
         set value(newVal) {this._value = newVal};
         submit() {
@@ -114,7 +118,11 @@
     };
 
     $ipe.InPlaceTextInput = class InPlaceTextInput extends $ipe.InPlaceInput {
+        constructor(options) {
+            super(options);
+        }
         get inputForm() {
+            console.log(this._value);
             if (null == this._inputForm) {
                 this._inputForm = $("<div>").attr('id', `in-place-form-${this.id}`).addClass("form-inline").append(
                     $("<div>").addClass("form-group").append(
@@ -122,13 +130,14 @@
                         this.generateButton().append(
                             $("<i>").addClass('fa fa-check')))) }
 
+            this.initInputFieldValue();
             return this._inputForm;
         }
 
         get inputField() {
             if (null == this._inputField) {
-                this.value = this._value;
-                this._inputField = this.generateInputField() }
+                this._inputField = this.generateInputField();
+            }
             return this._inputField }
 
         generateInputField() {
@@ -141,16 +150,39 @@
                 input.addClass(`form-control-${this.size}`) }
             return input }
 
+        initInputFieldValue() {
+            this._inputField.val(this._value);
+        }
+
         get value() {
-            if (null != this._inputField) this._value = this._inputField.val();
-            else return this._value }
+            if (null != this._inputField)
+                this._value = this._inputField.val();
+            return this._value }
 
         set value(newVal) {
             this._value = newVal;
-            if (null != this._inputField) this._inputField.val(newVal) }
+            if (null != this._inputField)
+                this.initInputFieldValue() }
     };
 
     $ipe.InPlaceDateInput = class InPlaceDateInput extends $ipe.InPlaceTextInput {
+        get value() {
+            if (null != this._inputField)
+                this._value = this._inputField.val();
+            return moment(this._value, "YYYY-MM-DD").format("DD.MM.YYYY");
+        }
+        set value(newVal) {
+            let m = moment(newVal, "DD.MM.YYYY");
+            if (!m.isValid()) {
+                m = moment(newVal, "YYYY-MM-DD");
+            }
+            this._value = m.format("YYYY-MM-DD");
+            if (null != this._inputField)
+                this.initInputFieldValue()
+        }
+    };
+
+    $ipe.InPlaceTimeInput = class InPlaceTimeInput extends $ipe.InPlaceTextInput {
         get value() {
             if (null != this._inputField)
                 this._value = this._inputField.val();
@@ -194,12 +226,12 @@
             InputConstructor: $ipe.InPlaceTextInput },
         date: {
             InputConstructor: $ipe.InPlaceDateInput },
-        month: {
-            InputConstructor: $ipe.InPlaceTextInput },
-        week: {
-            InputConstructor: $ipe.InPlaceTextInput },
+        // month: {
+        //     InputConstructor: $ipe.InPlaceTextInput },
+        // week: {
+        //     InputConstructor: $ipe.InPlaceTextInput },
         time: {
-            InputConstructor: $ipe.InPlaceTextInput },
+            InputConstructor: $ipe.InPlaceTimeInput },
         color: {
             InputConstructor: $ipe.InPlaceTextInput },
     };
