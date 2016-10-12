@@ -182,22 +182,6 @@
         }
     };
 
-    $ipe.InPlaceTimeInput = class InPlaceTimeInput extends $ipe.InPlaceTextInput {
-        get value() {
-            if (null != this._inputField)
-                this._value = this._inputField.val();
-            return moment(this._value, "YYYY-MM-DD").format("DD.MM.YYYY");
-        }
-        set value(newVal) {
-            let m = moment(newVal, "DD.MM.YYYY");
-            if (!m.isValid()) {
-                m = moment(newVal, "YYYY-MM-DD");
-            }
-            this._value = m.format("YYYY-MM-DD");
-            if (null != this._inputField) this._inputField.val(this._value);
-        }
-    };
-
     $ipe.defaults = {
         placeholder: "",
         value: null,
@@ -231,7 +215,7 @@
         // week: {
         //     InputConstructor: $ipe.InPlaceTextInput },
         time: {
-            InputConstructor: $ipe.InPlaceTimeInput },
+            InputConstructor: $ipe.InPlaceTextInput },
         color: {
             InputConstructor: $ipe.InPlaceTextInput },
     };
