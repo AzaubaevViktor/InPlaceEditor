@@ -2,14 +2,14 @@
     const STATE_DISABLE = false;
     const STATE_ENABLE = true;
     $.fn.inPlace = function (action) {
-        let options = $.extend({}, $ipe.defaults);
+        let options = $.extend({id: this.attr('id')}, $ipe.defaults);
         // Initialization
         if ('object' == (typeof action)) {
             $.extend(options, action);
         } else if ((undefined == action) || ('enable' == action)) {
         } else if ( action === "disable" ) {
             // Disable code.
-            console.log("Not implemented")
+            console.error("Not implemented")
         } else return this;
 
         // Заполнение дополнительных полей
@@ -81,10 +81,14 @@
                 $(document).on('mousedown.inPlace', document, (e) =>
                 {
                     let container = this.inPlaceInput.inputForm;
-                    if (!container.is(e.target) // if the target of the click isn't the container...
-                        && container.has(e.target).length === 0) // ... nor a descendant of the container
+
+                    if (
+                        !container.is($(e.target)) // if the target of the click isn't the container...
+                        && container.has($(e.target)).length === 0
+                        && container.find(`#${$(e.target).attr("id")}`).length == 0
+                    ) // ... nor a descendant of the container
                     {
-                        dismiss();
+                        // dismiss();
                     }
                 });
 
@@ -241,12 +245,38 @@
             this._value = this._inputField.prop('checked') ? 1 : 0 }
     };
 
+    $ipe.InPlaceSelect2Input = class InPlaceSelect2Input extends $ipe.InPlaceTextInput {
+        get inputForm() {
+            let need_init = null == this._inputForm;
+            super.inputForm;
+            if (need_init) {
+                this.inputField.select2(
+                    this.options.select2
+                );
+            }
+
+            return this._inputForm;
+        }
+        generateInputField() {
+            let input = $("<select>")
+                .attr('id', `in-place-input-field-${this.id}`)
+                .attr('placeholder', this.placeholder);
+            input.addClass("form-control");
+            if (this.size) {
+                input.addClass(`form-control-${this.size}`) }
+            return input }
+
+        get textValue() {
+            return "test";
+        }
+    };
+
     $ipe.defaults = {
         placeholder: "",
         value: null, // Значение поля
         size: "sm", // Размер элементов
         url: null, // URL, куда отсылать данные. заменяет собой dataHandle
-        dataHandle: new Promise((resolve) => {resolve()}), // Обработчик данных. Должен возвращать promise
+        dataHandle: () => {return new Promise((resolve) => {resolve()})}, // Обработчик данных. Должен возвращать promise
         submit: (data) => {}, // Вызывается после прихода данных
         dismiss: (data) => {}, // Вызывается в случае отмены редактирования
         ajax: {}, // Параметры ajax на отправку
@@ -285,6 +315,8 @@
         // color: {
         //     InputConstructor: $ipe.InPlaceTextInput },
         checkbox: {
-            InputConstructor: $ipe.InPlaceCheckBoxInput }
+            InputConstructor: $ipe.InPlaceCheckBoxInput },
+        select2: {
+            InputConstructor: $ipe.InPlaceSelect2Input }
     };
 }( jQuery ));

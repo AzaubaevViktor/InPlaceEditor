@@ -6,6 +6,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" />
     <title>In place editing</title>
 </head>
 <body>
@@ -80,6 +81,13 @@ $("errajaxipe").inPlace();</code></pre></td>
 $("checkboxipe").inPlace();</code></pre></td>
         <td><a id="checkboxipe" data-type="checkbox" data-pk="3">1</a></td>
     </tr>
+    <tr>
+        <td>Select2</td>
+        <td><pre><code>&lt;&gt;&lt;&gt;</code></pre></td>
+        <td>
+            <a id="select2ipe" data-type="select2" data-pk="3"></a>
+        </td>
+    </tr>
     </tbody>
 </table>
 
@@ -88,6 +96,7 @@ $("checkboxipe").inPlace();</code></pre></td>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mockjax/1.6.2/jquery.mockjax.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 <script src="js/bootstrap.js"></script>
 <script src="js/editable.js"></script>
 
@@ -113,7 +122,12 @@ $("checkboxipe").inPlace();</code></pre></td>
     $("#timeipe").inPlace();
     $("#ajaxipe").inPlace({url: "/ajax1"});
     $("#errajaxipe").inPlace({url: "/ajax2"});
-    $("#checkboxipe").inPlace({data: [{id: 0, text: "Un"}, {id: 1, text: "ch"}]})
+    $("#checkboxipe").inPlace({data: [{id: 0, text: "Un"}, {id: 1, text: "ch"}]});
+    $("#select2ipe").inPlace({
+        select2: {
+            data: [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }]
+        }
+    })
 
 </script>
 
