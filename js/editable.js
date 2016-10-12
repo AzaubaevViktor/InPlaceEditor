@@ -40,7 +40,6 @@
                 $(document).on('mousedown.inPlace', document, (e) =>
                 {
                     let container = this.inPlaceInput.inputForm;
-                    console.log(e);
                     if (!container.is(e.target) // if the target of the click isn't the container...
                         && container.has(e.target).length === 0) // ... nor a descendant of the container
                     {
@@ -80,6 +79,7 @@
             this.id = options.id;
             this.type = options.type;
             this.placeholder = options.placeholder;
+            this.size = options.size;
             this._value = null;
             this.value = options.value;
 
@@ -113,10 +113,22 @@
             return this._inputField }
 
         generateButton() {
-            return $("<a>").attr('id', 'inplace-submit').addClass("btn btn-success") }
+            let btn = $("<a>").attr('id', 'inplace-submit');
+            btn.addClass("btn btn-success");
+            if (this.size) {
+                btn.addClass(`btn-${this.size}`) }
+            return btn;
+        }
 
         generateInputField() {
-            return $(`<input type="${this.type}" class="form-control" id="in-place-input-field-${this.id}" placeholder="${this.placeholder}">`) }
+            let input = $("<input>")
+                .attr('id', `in-place-input-field-${this.id}`)
+                .attr('type', this.type)
+                .attr('placeholder', this.placeholder);
+            input.addClass("form-control");
+            if (this.size) {
+                input.addClass(`form-control-${this.size}`) }
+            return input }
 
         get value() {
             if (null != this._inputField) return this._inputField.val();
@@ -146,7 +158,8 @@
 
     $ipe.defaults = {
         placeholder: "",
-        value: null
+        value: null,
+        size: "sm"
     };
 
     $ipe.types = {

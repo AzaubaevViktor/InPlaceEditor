@@ -16,9 +16,27 @@
     <hr class="m-y-2">
     <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
     <p class="lead">
-        <a data-type="text">Learn more</a>
+
     </p>
 </div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Тип</th>
+        <th>Код</th>
+        <th>Попробовать</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Text</td>
+        <td><pre><code>&lt;a id="textipe" data-type="text"&gt;Learn more&lt;/a&gt;
+$("textipe").inPlace();</code></pre></td>
+        <td><a id="textipe" data-type="text">Learn more</a></td>
+    </tr>
+    </tbody>
+</table>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
@@ -27,7 +45,7 @@
 <script src="js/editable.js"></script>
 
 <script>
-   $("a").inPlace();
+    $("#textipe").inPlace();
 </script>
 
 </body>
