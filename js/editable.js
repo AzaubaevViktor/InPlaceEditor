@@ -84,14 +84,33 @@
             this.value = options.value;
 
             this._inputField = null;
-            this._inputForm = null;
-        }
+            this._inputForm = null }
         get inputForm() {};
         get inputField() {};
         generateInputField() {};
+        generateButton() {
+            let btn = $("<a>").attr('id', 'inplace-submit');
+            btn.addClass("btn btn-success");
+            if (this.size) {
+                btn.addClass(`btn-${this.size}`) }
+            return btn }
         removeField() {};
         get value() { return this._value};
         set value(newVal) {this._value = newVal};
+        submit() {
+            this.value = this._inputField.val();
+            console.log(`Submit with ${this.value}`);
+            this.removeForm();
+            return this.value }
+
+        removeForm() {
+            this._inputField.remove();
+            this._inputForm.remove();
+            this._inputField = this._inputForm = null }
+
+        dismiss() {
+            console.log("Dissmiss");
+            this.removeForm() }
     };
 
     $ipe.InPlaceTextInput = class InPlaceTextInput extends $ipe.InPlaceInput {
@@ -112,14 +131,6 @@
                 this._inputField = this.generateInputField() }
             return this._inputField }
 
-        generateButton() {
-            let btn = $("<a>").attr('id', 'inplace-submit');
-            btn.addClass("btn btn-success");
-            if (this.size) {
-                btn.addClass(`btn-${this.size}`) }
-            return btn;
-        }
-
         generateInputField() {
             let input = $("<input>")
                 .attr('id', `in-place-input-field-${this.id}`)
@@ -131,28 +142,27 @@
             return input }
 
         get value() {
-            if (null != this._inputField) return this._inputField.val();
+            if (null != this._inputField) this._value = this._inputField.val();
             else return this._value }
 
         set value(newVal) {
             this._value = newVal;
-            if (undefined != this._inputField) this._inputField.val(newVal) }
+            if (null != this._inputField) this._inputField.val(newVal) }
+    };
 
-        submit() {
-            this.value = this._inputField.val();
-            console.log(`Submit with ${this.value}`);
-            this.removeForm();
-            return this.value;
+    $ipe.InPlaceDateInput = class InPlaceDateInput extends $ipe.InPlaceTextInput {
+        get value() {
+            if (null != this._inputField)
+                this._value = this._inputField.val();
+            return moment(this._value, "YYYY-MM-DD").format("DD.MM.YYYY");
         }
-
-        removeForm() {
-            this._inputField.remove();
-            this._inputForm.remove();
-            this._inputField = this._inputForm = null }
-
-        dismiss() {
-            console.log("Dissmiss");
-            this.removeForm();
+        set value(newVal) {
+            let m = moment(newVal, "DD.MM.YYYY");
+            if (!m.isValid()) {
+                m = moment(newVal, "YYYY-MM-DD");
+            }
+            this._value = m.format("YYYY-MM-DD");
+            if (null != this._inputField) this._inputField.val(this._value);
         }
     };
 
@@ -162,17 +172,35 @@
         size: "sm"
     };
 
-    $ipe.types = {
-        text: {
-            InputConstructor: $ipe.InPlaceTextInput },
-        number: {
-            InputConstructor: $ipe.InPlaceTextInput }
-    };
-
     $ipe.style = {
         linkText: {
             'border-bottom': "1px dashed gray",
             'color': '#0275d8'
         }
-    }
+    };
+
+    $ipe.types = {
+        text: {
+            InputConstructor: $ipe.InPlaceTextInput },
+        number: {
+            InputConstructor: $ipe.InPlaceTextInput },
+        email: {
+            InputConstructor: $ipe.InPlaceTextInput },
+        url: {
+            InputConstructor: $ipe.InPlaceTextInput },
+        tel: {
+            InputConstructor: $ipe.InPlaceTextInput },
+        'datetime-local': {
+            InputConstructor: $ipe.InPlaceTextInput },
+        date: {
+            InputConstructor: $ipe.InPlaceDateInput },
+        month: {
+            InputConstructor: $ipe.InPlaceTextInput },
+        week: {
+            InputConstructor: $ipe.InPlaceTextInput },
+        time: {
+            InputConstructor: $ipe.InPlaceTextInput },
+        color: {
+            InputConstructor: $ipe.InPlaceTextInput },
+    };
 }( jQuery ));

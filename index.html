@@ -11,12 +11,15 @@
 <body>
 
 <div class="jumbotron">
-    <h1 class="display-3">Hello, world!</h1>
-    <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+    <h1 class="display-3">In Place Editor</h1>
+    <p class="lead">Онлайн редактирование форм</p>
     <hr class="m-y-2">
-    <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+    <p>Необходимые бибилиотеки:</p>
     <p class="lead">
-
+        jQuery 3.1.1<br>
+        tether 1.2.0<br>
+        bootstrap 4.0.0-alpha.4<br>
+        momentjs 2.15.1
     </p>
 </div>
 
@@ -41,18 +44,26 @@ $("textipe").inPlace();</code></pre></td>
 $("numberipe").inPlace();</code></pre></td>
         <td><a id="numberipe" data-type="number">13</a></td>
     </tr>
+    <tr>
+        <td>Date</td>
+        <td><pre><code>&lt;a id="dateipe" data-type="date"&gt;12&lt;/a&gt;
+$("dateipe").inPlace();</code></pre></td>
+        <td><a id="dateipe" data-type="date" value="10.11.2014">10.11.2014</a></td>
+    </tr>
     </tbody>
 </table>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
 <script src="js/bootstrap.js"></script>
 <script src="js/editable.js"></script>
 
 <script>
     $("#textipe").inPlace();
     $("#numberipe").inPlace();
+    $("#dateipe").inPlace();
 </script>
 
 </body>
