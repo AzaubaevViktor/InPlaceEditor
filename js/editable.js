@@ -11,39 +11,63 @@
             // Disable code.
         } else return this;
 
-        let type = this.data('type');
+        let type = options.type = options.type || this.data('type');
         this.state = this.state || STATE_DISABLE;
         this.inPlaceInput = this.inPlaceInput || new $ipe.types[type].InputConstructor(options);
         this.css($ipe.style.linkText);
 
+        let submit = () => {
+            $(document).off(".inPlace");
+            let value = this.inPlaceInput.submit();
+            this.show();
+            this.text(value);
+            this.state = !this.state };
+
+        let dismiss = () => {
+            $(document).off(".inPlace");
+            this.inPlaceInput.dismiss();
+            this.show();
+            this.state = !this.state };
+
         // События
-        this.click((event) => {
+        this.click(event => {
             if (STATE_DISABLE == this.state) {
-                this.inPlaceInput.inputField.insertAfter(this);
+                this.inPlaceInput.inputForm.insertAfter(this);
                 this.inPlaceInput.value = this.text() || options.value;
                 this.hide();
                 this.inPlaceInput.inputField.focus();
 
-                this.inPlaceInput.inputField.focusout(() => {
-                    console.log("Dissmiss");
-                    this.inPlaceInput.inputField.remove();
-                    this.show();
-                    this.state = !this.state;
-                });
-                this.inPlaceInput.inputField.keyup(e => {
-                    if(e.keyCode == 13) {
-                        console.log(this.inPlaceInput.value);
-                        this.inPlaceInput.inputField.remove();
-                        this.show();
-                        this.text(this.inPlaceInput.value);
-                        this.state = !this.state;
+                $(document).on('mousedown.inPlace', document, (e) =>
+                {
+                    let container = this.inPlaceInput.inputForm;
+                    console.log(e);
+                    if (!container.is(e.target) // if the target of the click isn't the container...
+                        && container.has(e.target).length === 0) // ... nor a descendant of the container
+                    {
+                        dismiss();
                     }
                 });
 
+                this.inPlaceInput.inputForm.find("#inplace-submit").click(() => {
+                    console.log("Submit click");
+                    submit();
+                    return false;
+                });
+
+                this.inPlaceInput.inputForm.keyup(e => {
+                    if(e.keyCode == 13) {
+                        console.log("Key13");
+                        submit();
+                    } else if (e.keyCode == 27) {
+                        console.log("Key27");
+                        dismiss();
+                    }
+                    return false;
+                });
             }
             this.state = !this.state;
+            return false;
         });
-
 
         return this;
     };
@@ -59,35 +83,65 @@
             this._value = null;
             this.value = options.value;
 
-            this.inputEl = null;
+            this._inputField = null;
+            this._inputForm = null;
         }
+        get inputForm() {};
         get inputField() {};
+        generateInputField() {};
         removeField() {};
         get value() { return this._value};
         set value(newVal) {this._value = newVal};
     };
 
     $ipe.InPlaceTextInput = class InPlaceTextInput extends $ipe.InPlaceInput {
-        get inputField() {
-            if (undefined != this.inputEl) return this.inputEl;
+        get inputForm() {
+            if (null == this._inputForm) {
+                this._inputForm = $("<div>").attr('id', `in-place-form-${this.id}`).addClass("form-inline").append(
+                    $("<div>").addClass("form-group").append(
+                        this.inputField,
+                        this.generateButton().append(
+                            $("<i>").addClass('fa fa-check')))) }
 
-            this.value = this._value;
-            this.inputEl = $(`<input type="${this.type}" class="form-control" id="_in-place-editor-${this.id}" placeholder="${this.placeholder}">`);
-            return this.inputEl}
+            return this._inputForm;
+        }
+
+        get inputField() {
+            if (null == this._inputField) {
+                this.value = this._value;
+                this._inputField = this.generateInputField() }
+            return this._inputField }
+
+        generateButton() {
+            return $("<a>").attr('id', 'inplace-submit').addClass("btn btn-success") }
+
+        generateInputField() {
+            return $(`<input type="${this.type}" class="form-control" id="in-place-input-field-${this.id}" placeholder="${this.placeholder}">`) }
 
         get value() {
-            if (undefined != this.inputEl) return this.inputEl.val();
-            else return this._value}
+            if (null != this._inputField) return this._inputField.val();
+            else return this._value }
 
         set value(newVal) {
             this._value = newVal;
-            if (undefined != this.inputEl) this.inputEl.val(newVal);
+            if (undefined != this._inputField) this._inputField.val(newVal) }
+
+        submit() {
+            this.value = this._inputField.val();
+            console.log(`Submit with ${this.value}`);
+            this.removeForm();
+            return this.value;
         }
 
-        removeField() {
-            this.value = this.inputEl.val();
-            this.inputEl.remove();
-            return this.value}
+        removeForm() {
+            this._inputField.remove();
+            this._inputForm.remove();
+            this._inputField = this._inputForm = null }
+
+        dismiss() {
+            console.log("Dissmiss");
+            this.removeForm();
+        }
     };
 
     $ipe.defaults = {
