@@ -216,7 +216,7 @@
         //     InputConstructor: $ipe.InPlaceTextInput },
         time: {
             InputConstructor: $ipe.InPlaceTextInput },
-        color: {
-            InputConstructor: $ipe.InPlaceTextInput },
+        // color: {
+        //     InputConstructor: $ipe.InPlaceTextInput },
     };
 }( jQuery ));
