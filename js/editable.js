@@ -14,24 +14,55 @@
         let type = options.type = options.type || this.data('type');
         this.state = this.state || STATE_DISABLE;
         options.value = this.text() || this.attr('value') || options.value;
+        options.pk = this.data('pk') || options.pk;
         this.inPlaceInput = this.inPlaceInput || new $ipe.types[type].InputConstructor(options);
 
         this.text(this.inPlaceInput.value);
 
         this.css($ipe.style.linkText);
 
+        let ajaxSend = (data) => {return new Promise()};
+
+        if (null != options.url) {
+            ajaxSend = (data) => {
+                let ajaxOpt = $.extend({data, url: options.url}, options.ajax);
+                return $.ajax(ajaxOpt)
+            };
+        }
+
         let submit = () => {
             $(document).off(".inPlace");
-            let value = this.inPlaceInput.submit();
-            this.show();
-            this.text(value);
-            this.state = !this.state };
+            let value = this.inPlaceInput.value;
+            let data = {
+                name: this.attr('id'),
+                value,
+                pk: options.pk
+            };
+
+            ajaxSend(data).then(() => {
+                this.inPlaceInput.submit();
+                this.show();
+                this.text(value);
+                this.state = !this.state;
+
+                options.submit(data);
+            })
+        };
 
         let dismiss = () => {
             $(document).off(".inPlace");
             this.inPlaceInput.dismiss();
             this.show();
-            this.state = !this.state };
+            this.state = !this.state;
+
+            let data = {
+                name: this.attr('id'),
+                pk: options.pk
+            };
+            options.dismiss(data);
+        };
+
+
 
         // События
         this.click(event => {
@@ -51,17 +82,14 @@
                 });
 
                 this.inPlaceInput.inputForm.find("#inplace-submit").click(() => {
-                    console.log("Submit click");
                     submit();
                     return false;
                 });
 
                 this.inPlaceInput.inputForm.keyup(e => {
                     if(e.keyCode == 13) {
-                        console.log("Key13");
                         submit();
                     } else if (e.keyCode == 27) {
-                        console.log("Key27");
                         dismiss();
                     }
                     return false;
@@ -103,7 +131,6 @@
         set value(newVal) {this._value = newVal};
         submit() {
             this.value = this._inputField.val();
-            console.log(`Submit with ${this.value}`);
             this.removeForm();
             return this.value }
 
@@ -113,7 +140,6 @@
             this._inputField = this._inputForm = null }
 
         dismiss() {
-            console.log("Dissmiss");
             this.removeForm() }
     };
 
@@ -122,7 +148,6 @@
             super(options);
         }
         get inputForm() {
-            console.log(this._value);
             if (null == this._inputForm) {
                 this._inputForm = $("<div>").attr('id', `in-place-form-${this.id}`).addClass("form-inline").append(
                     $("<div>").addClass("form-group").append(
@@ -185,7 +210,11 @@
     $ipe.defaults = {
         placeholder: "",
         value: null,
-        size: "sm"
+        size: "sm",
+        url: null,
+        submit: (data) => {},
+        dismiss: (data) => {},
+        ajax: {}
     };
 
     $ipe.style = {

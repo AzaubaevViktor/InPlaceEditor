@@ -62,6 +62,12 @@ $("dateipe").inPlace();</code></pre></td>
 $("dateipe").inPlace();</code></pre></td>
         <td><a id="timeipe" data-type="time" value="10:44"></a></td>
     </tr>
+    <tr>
+        <td>Text AJAX</td>
+        <td><pre><code>&lt;a id="ajaxipe" data-type="text" data-pk="3"&gt;Learn more&lt;/a&gt;
+$("textipe").inPlace();</code></pre></td>
+        <td><a id="ajaxipe" data-type="text" data-pk="3">Learn more</a></td>
+    </tr>
     </tbody>
 </table>
 
@@ -69,16 +75,25 @@ $("dateipe").inPlace();</code></pre></td>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" integrity="sha384-VjEeINv9OSwtWFLAtmc4JCtEJXXBub00gtSnszmspDLCtC0I4z4nqz7rEFbIZLLU" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mockjax/1.6.2/jquery.mockjax.min.js"></script>
 <script src="js/bootstrap.js"></script>
 <script src="js/editable.js"></script>
 
 <script>
+    $.mockjax({
+        url: "/ajax1",
+        responseTime: 500,
+        response: (d) => {
+            console.log(d)
+        }
+    });
+
     $("#textipe").inPlace();
     $("#numberipe").inPlace();
     $("#dateipe").inPlace();
     $("#telipe").inPlace();
     $("#timeipe").inPlace();
-    $("#coloripe").inPlace();
+    $("#ajaxipe").inPlace({url: "/ajax1"})
 
 </script>
 
