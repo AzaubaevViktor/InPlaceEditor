@@ -22,10 +22,8 @@
 
         this.css($ipe.style.linkText);
 
-        let ajaxSend = _ => {return new Promise((resolve) => {resolve()})};
-
         if (null != options.url) {
-            ajaxSend = data => {
+            options.dataHandle = data => {
                 let ajaxOpt = $.extend({data, url: options.url}, options.ajax);
                 return $.ajax(ajaxOpt)
             };
@@ -33,6 +31,7 @@
 
         let submit = () => {
             $(document).off(".inPlace");
+            let oldValue = this.inPlaceInput._value; // так как если вызвать .value, он автоматически обновит
             this.inPlaceInput.fieldToValue();
             let value = this.inPlaceInput.value;
             console.log(`Submit with ${value}`);
@@ -44,7 +43,7 @@
             this.inPlaceInput.inputField.prop('disabled', true);
             this.inPlaceInput.inputForm.find("inplace-submit").prop('disabled', true);
 
-            ajaxSend(data).then((response) => {
+            options.dataHandle(data).then((response) => {
                 this.inPlaceInput.submit();
                 this.show();
                 this.text(this.inPlaceInput.textValue);
@@ -52,8 +51,9 @@
 
                 options.submit(data);
             }).catch((error) => {
-                this.inPlaceInput.inputField.prop('disabled', false);
-                this.inPlaceInput.inputForm.find("inplace-submit").prop('disabled', false);
+                this.inPlaceInput._value = oldValue;
+                this.inPlaceInput.inputField.prop('disabled', false).addClass("form-control-danger");
+                this.inPlaceInput.inputForm.addClass("has-danger").find("inplace-submit").prop('disabled', false);
             })
         };
 
@@ -243,13 +243,15 @@
 
     $ipe.defaults = {
         placeholder: "",
-        value: null,
-        size: "sm",
-        url: null,
-        submit: (data) => {},
-        dismiss: (data) => {},
-        ajax: {},
-        data: []
+        value: null, // Значение поля
+        size: "sm", // Размер элементов
+        url: null, // URL, куда отсылать данные. заменяет собой dataHandle
+        dataHandle: new Promise((resolve) => {resolve()}), // Обработчик данных. Должен возвращать promise
+        submit: (data) => {}, // Вызывается после прихода данных
+        dismiss: (data) => {}, // Вызывается в случае отмены редактирования
+        ajax: {}, // Параметры ajax на отправку
+        data: [], // Данные для полей
+        select2: {} // настройки для select2
     };
 
     $ipe.style = {
