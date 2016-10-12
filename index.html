@@ -74,6 +74,12 @@ $("ajaxipe").inPlace();</code></pre></td>
 $("errajaxipe").inPlace();</code></pre></td>
         <td><a id="errajaxipe" data-type="text" data-pk="3">Learn more</a></td>
     </tr>
+    <tr>
+        <td>CheckBox</td>
+        <td><pre><code>&lt;a id="checkboxipe" data-type="checkbox" data-pk="3"&gt;&lt;/a&gt;
+$("checkboxipe").inPlace();</code></pre></td>
+        <td><a id="checkboxipe" data-type="checkbox" data-pk="3">1</a></td>
+    </tr>
     </tbody>
 </table>
 
@@ -106,7 +112,8 @@ $("errajaxipe").inPlace();</code></pre></td>
     $("#telipe").inPlace();
     $("#timeipe").inPlace();
     $("#ajaxipe").inPlace({url: "/ajax1"});
-    $("#errajaxipe").inPlace({url: "/ajax2"})
+    $("#errajaxipe").inPlace({url: "/ajax2"});
+    $("#checkboxipe").inPlace({data: [{id: 0, text: "Un"}, {id: 1, text: "ch"}]})
 
 </script>
 

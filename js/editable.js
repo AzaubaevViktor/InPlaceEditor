@@ -18,7 +18,7 @@
         options.value = this.text() || options.value;
         this.inPlaceInput = this.inPlaceInput || new $ipe.types[options.type].InputConstructor(options);
 
-        this.text(this.inPlaceInput.value);
+        this.text(this.inPlaceInput.textValue);
 
         this.css($ipe.style.linkText);
 
@@ -33,7 +33,9 @@
 
         let submit = () => {
             $(document).off(".inPlace");
+            this.inPlaceInput.fieldToValue();
             let value = this.inPlaceInput.value;
+            console.log(`Submit with ${value}`);
             let data = {
                 name: this.attr('id'),
                 value,
@@ -45,7 +47,7 @@
             ajaxSend(data).then((response) => {
                 this.inPlaceInput.submit();
                 this.show();
-                this.text(value);
+                this.text(this.inPlaceInput.textValue);
                 this.state = !this.state;
 
                 options.submit(data);
@@ -56,6 +58,7 @@
         };
 
         let dismiss = () => {
+            console.log("Dismiss");
             $(document).off(".inPlace");
             this.inPlaceInput.dismiss();
             this.show();
@@ -130,11 +133,23 @@
                 btn.addClass(`btn-${this.size}`) }
             return btn }
         removeField() {};
-        initInputFieldValue() {}
-        get value() { return this._value};
-        set value(newVal) {this._value = newVal};
+        valueToField() {};
+        fieldToValue() {};
+        get value() {
+            if (null != this._inputField)
+                this.fieldToValue();
+            return this._value }
+
+        set value(newVal) {
+            this._value = newVal;
+            if (null != this._inputField)
+                this.valueToField() }
+
+        get textValue() {
+            return this.value}
+
         submit() {
-            this.value = this._inputField.val();
+            this.fieldToValue();
             this.removeForm();
             return this.value }
 
@@ -157,9 +172,9 @@
                     $("<div>").addClass("form-group").append(
                         this.inputField,
                         this.generateButton().append(
-                            $("<i>").addClass('fa fa-check')))) }
+                            $("<i>").addClass('fa fa-check'))));
+                this.valueToField() }
 
-            this.initInputFieldValue();
             return this._inputForm;
         }
 
@@ -179,27 +194,19 @@
                 input.addClass(`form-control-${this.size}`) }
             return input }
 
-        initInputFieldValue() {
-            this._inputField.val(this._value);
-        }
+        valueToField() {
+            this._inputField.val(this._value) }
 
-        get value() {
-            if (null != this._inputField)
-                this._value = this._inputField.val();
-            return this._value }
-
-        set value(newVal) {
-            this._value = newVal;
-            if (null != this._inputField)
-                this.initInputFieldValue() }
+        fieldToValue() {
+            this._value = this._inputField.val() }
     };
 
     $ipe.InPlaceDateInput = class InPlaceDateInput extends $ipe.InPlaceTextInput {
         get value() {
             if (null != this._inputField)
                 this._value = this._inputField.val();
-            return moment(this._value, "YYYY-MM-DD").format("DD.MM.YYYY");
-        }
+            return this._value }
+
         set value(newVal) {
             let m = moment(newVal, "DD.MM.YYYY");
             if (!m.isValid()) {
@@ -207,8 +214,31 @@
             }
             this._value = m.format("YYYY-MM-DD");
             if (null != this._inputField)
-                this.initInputFieldValue()
-        }
+                this.valueToField() }
+
+        get textValue() {
+            return moment(this._value, "YYYY-MM-DD").format("DD.MM.YYYY") }
+    };
+
+    $ipe.InPlaceCheckBoxInput = class InPlaceCheckBoxInput extends $ipe.InPlaceTextInput {
+        generateInputField() {
+            let input = $("<input>")
+                .attr('id', `in-place-input-field-${this.id}`)
+                .attr('type', this.type)
+                .attr('placeholder', this.placeholder);
+            input.addClass("form-check-input");
+            if (this.size) {
+                input.addClass(`form-check-input-${this.size}`) }
+            return input }
+
+        get textValue() {
+            return this.options.data[this._value].text }
+
+        valueToField() {
+            this._inputField.prop("checked", 1 == this._value) }
+
+        fieldToValue() {
+            this._value = this._inputField.prop('checked') ? 1 : 0 }
     };
 
     $ipe.defaults = {
@@ -218,7 +248,8 @@
         url: null,
         submit: (data) => {},
         dismiss: (data) => {},
-        ajax: {}
+        ajax: {},
+        data: []
     };
 
     $ipe.style = {
@@ -251,5 +282,7 @@
             InputConstructor: $ipe.InPlaceTextInput },
         // color: {
         //     InputConstructor: $ipe.InPlaceTextInput },
+        checkbox: {
+            InputConstructor: $ipe.InPlaceCheckBoxInput }
     };
 }( jQuery ));
