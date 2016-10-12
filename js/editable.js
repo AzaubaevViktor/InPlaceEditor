@@ -164,8 +164,9 @@
 
     $ipe.types = {
         text: {
-            InputConstructor: $ipe.InPlaceTextInput
-        }
+            InputConstructor: $ipe.InPlaceTextInput },
+        number: {
+            InputConstructor: $ipe.InPlaceTextInput }
     };
 
     $ipe.style = {
