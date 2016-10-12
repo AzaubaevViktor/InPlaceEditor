@@ -14,7 +14,7 @@
         let type = this.data('type');
         this.state = this.state || STATE_DISABLE;
         this.inPlaceInput = this.inPlaceInput || new $ipe.types[type].InputConstructor(options);
-        this.css($ipe.style);
+        this.css($ipe.style.linkText);
 
         // События
         this.click((event) => {
@@ -92,7 +92,7 @@
 
     $ipe.defaults = {
         placeholder: "",
-        value: null,
+        value: null
     };
 
     $ipe.types = {
@@ -104,7 +104,7 @@
     $ipe.style = {
         linkText: {
             'border-bottom': "1px dashed gray",
-            'font-color': 'blue',
+            'color': '#0275d8'
         }
     }
 }( jQuery ));
