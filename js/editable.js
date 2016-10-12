@@ -9,13 +9,14 @@
         } else if ((undefined == action) || ('enable' == action)) {
         } else if ( action === "disable" ) {
             // Disable code.
+            console.log("Not implemented")
         } else return this;
 
-        let type = options.type = options.type || this.data('type');
+        // Заполнение дополнительных полей
+        $.extend(options, this.data());
         this.state = this.state || STATE_DISABLE;
-        options.value = this.text() || this.attr('value') || options.value;
-        options.pk = this.data('pk') || options.pk;
-        this.inPlaceInput = this.inPlaceInput || new $ipe.types[type].InputConstructor(options);
+        options.value = this.text() || options.value;
+        this.inPlaceInput = this.inPlaceInput || new $ipe.types[options.type].InputConstructor(options);
 
         this.text(this.inPlaceInput.value);
 
@@ -36,8 +37,7 @@
             let data = {
                 name: this.attr('id'),
                 value,
-                pk: options.pk
-            };
+                pk: options.pk };
 
             this.inPlaceInput.inputField.prop('disabled', true);
             this.inPlaceInput.inputForm.find("inplace-submit").prop('disabled', true);
