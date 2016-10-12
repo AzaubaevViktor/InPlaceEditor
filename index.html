@@ -59,14 +59,20 @@ $("dateipe").inPlace();</code></pre></td>
     <tr>
         <td>Time</td>
         <td><pre><code>&lt;a id="timeipe" data-type="time" value="10:44"&gt;&lt;/a&gt;
-$("dateipe").inPlace();</code></pre></td>
+$("timeipe").inPlace();</code></pre></td>
         <td><a id="timeipe" data-type="time" value="10:44"></a></td>
     </tr>
     <tr>
         <td>Text AJAX</td>
         <td><pre><code>&lt;a id="ajaxipe" data-type="text" data-pk="3"&gt;Learn more&lt;/a&gt;
-$("textipe").inPlace();</code></pre></td>
+$("ajaxipe").inPlace();</code></pre></td>
         <td><a id="ajaxipe" data-type="text" data-pk="3">Learn more</a></td>
+    </tr>
+    <tr>
+        <td>Text ERR AJAX</td>
+        <td><pre><code>&lt;a id="errajaxipe" data-type="text" data-pk="3"&gt;Learn more&lt;/a&gt;
+$("errajaxipe").inPlace();</code></pre></td>
+        <td><a id="errajaxipe" data-type="text" data-pk="3">Learn more</a></td>
     </tr>
     </tbody>
 </table>
@@ -88,12 +94,19 @@ $("textipe").inPlace();</code></pre></td>
         }
     });
 
+    $.mockjax({
+        url: "/ajax2",
+        responseTime: 500,
+        status: 500
+    });
+
     $("#textipe").inPlace();
     $("#numberipe").inPlace();
     $("#dateipe").inPlace();
     $("#telipe").inPlace();
     $("#timeipe").inPlace();
-    $("#ajaxipe").inPlace({url: "/ajax1"})
+    $("#ajaxipe").inPlace({url: "/ajax1"});
+    $("#errajaxipe").inPlace({url: "/ajax2"})
 
 </script>
 

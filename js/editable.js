@@ -21,10 +21,10 @@
 
         this.css($ipe.style.linkText);
 
-        let ajaxSend = (data) => {return new Promise()};
+        let ajaxSend = _ => {return new Promise((resolve) => {resolve()})};
 
         if (null != options.url) {
-            ajaxSend = (data) => {
+            ajaxSend = data => {
                 let ajaxOpt = $.extend({data, url: options.url}, options.ajax);
                 return $.ajax(ajaxOpt)
             };
@@ -39,13 +39,19 @@
                 pk: options.pk
             };
 
-            ajaxSend(data).then(() => {
+            this.inPlaceInput.inputField.prop('disabled', true);
+            this.inPlaceInput.inputForm.find("inplace-submit").prop('disabled', true);
+
+            ajaxSend(data).then((response) => {
                 this.inPlaceInput.submit();
                 this.show();
                 this.text(value);
                 this.state = !this.state;
 
                 options.submit(data);
+            }).catch((error) => {
+                this.inPlaceInput.inputField.prop('disabled', false);
+                this.inPlaceInput.inputForm.find("inplace-submit").prop('disabled', false);
             })
         };
 
@@ -61,8 +67,6 @@
             };
             options.dismiss(data);
         };
-
-
 
         // События
         this.click(event => {
