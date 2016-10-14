@@ -27,7 +27,11 @@
 
         let updateText = () => {
             this.text(this.inPlaceInput.text);
-            this.css($ipe.defaults.styles[this.inPlaceInput.isFieldEmpty ? 'emptyText' : 'linkText']);
+            if (this.inPlaceInput.isFieldEmpty) {
+                this.removeClass('inplace-link-text').addClass('inplace-empty-text')
+            } else {
+                this.removeClass('inplace-empty-text').addClass('inplace-link-text')
+            }
         };
 
         updateText();
@@ -286,16 +290,6 @@
         placeholder: "",
         value: null, // Значение поля
         size: "sm", // Размер элементов
-        styles: {
-            linkText: {
-                'border-bottom': "1px dashed gray",
-                'color': '#0275d8'
-            },
-            emptyText: {
-                'border-bottom': "1px dashed red",
-                'color': '#d9534f',
-            }
-        },
         emptyText: "Empty",
         url: null, // URL, куда отсылать данные. заменяет собой dataHandle
         dataHandle: data => {return new Promise((resolve) => {resolve()})}, // Обработчик данных. Должен возвращать promise

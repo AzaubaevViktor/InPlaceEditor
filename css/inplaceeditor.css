@@ -1,0 +1,13 @@
+.inplace-link-text {
+    border-bottom: 1px dashed gray !important;
+    color: #0275d8 !important;
+}
+
+.inplace-empty-text {
+    border-bottom: 1px dashed red !important;
+    color: #d9534f !important;
+}
+
+.select2 {
+    min-width: 10rem;
+}
