@@ -18,16 +18,19 @@
         options.value = this.text() || options.value;
         this.inPlaceInput = this.inPlaceInput || new $ipe.types[options.type].InputConstructor(options);
 
-        this.text(this.inPlaceInput.text);
-
-        this.css($ipe.defaults.styles[this.inPlaceInput.isFieldEmpty ? 'emptyText' : 'linkText']);
-
         if (null != options.url) {
             options.dataHandle = data => {
                 let ajaxOpt = $.extend({data, url: options.url}, options.ajax);
                 return $.ajax(ajaxOpt)
             };
         }
+
+        let updateText = () => {
+            this.text(this.inPlaceInput.text);
+            this.css($ipe.defaults.styles[this.inPlaceInput.isFieldEmpty ? 'emptyText' : 'linkText']);
+        };
+
+        updateText();
 
         let submit = () => {
             $(document).off(".inPlace");
@@ -46,7 +49,7 @@
             options.dataHandle(data).then((response) => {
                 this.inPlaceInput.submit();
                 this.show();
-                this.text(this.inPlaceInput.text);
+                updateText();
                 this.state = !this.state;
 
                 options.submit(data);
@@ -290,14 +293,14 @@
             },
             emptyText: {
                 'border-bottom': "1px dashed red",
-                'color': 'red',
+                'color': '#d9534f',
             }
         },
         emptyText: "Empty",
         url: null, // URL, куда отсылать данные. заменяет собой dataHandle
-        dataHandle: () => {return new Promise((resolve) => {resolve()})}, // Обработчик данных. Должен возвращать promise
-        submit: (data) => {}, // Вызывается после прихода данных
-        dismiss: (data) => {}, // Вызывается в случае отмены редактирования
+        dataHandle: data => {return new Promise((resolve) => {resolve()})}, // Обработчик данных. Должен возвращать promise
+        submit: data => {}, // Обрабатывает данные, которые вернёт dataHandle
+        dismiss: data => {}, // Вызывается в случае отмены редактирования
         ajax: {}, // Параметры ajax на отправку
         data: [], // Данные для полей
         select2: {} // настройки для select2
