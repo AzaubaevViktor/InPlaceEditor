@@ -5,6 +5,7 @@ InPlaceEditor
 Примеры использования можно посмотреть в файле index.html.
   
 Поддержка:  
+===
 
 * text
 * number
@@ -16,3 +17,8 @@ InPlaceEditor
 * time
 * checkbox
 * select2 (включая мультивыбор)
+
+Потрогать
+===
+
+[Тык](https://ktulhy-kun.github.io/InPlaceEditor/)
