@@ -18,9 +18,9 @@
         options.value = this.text() || options.value;
         this.inPlaceInput = this.inPlaceInput || new $ipe.types[options.type].InputConstructor(options);
 
-        this.text(this.inPlaceInput.textValue);
+        this.text(this.inPlaceInput.text);
 
-        this.css($ipe.style.linkText);
+        this.css($ipe.defaults.styles[this.inPlaceInput.isFieldEmpty ? 'emptyText' : 'linkText']);
 
         if (null != options.url) {
             options.dataHandle = data => {
@@ -46,7 +46,7 @@
             options.dataHandle(data).then((response) => {
                 this.inPlaceInput.submit();
                 this.show();
-                this.text(this.inPlaceInput.textValue);
+                this.text(this.inPlaceInput.text);
                 this.state = !this.state;
 
                 options.submit(data);
@@ -75,6 +75,7 @@
         this.click(event => {
             if (STATE_DISABLE == this.state) {
                 this.inPlaceInput.inputForm.insertAfter(this);
+                this.inPlaceInput.valueToField();
                 this.hide();
                 this.inPlaceInput.inputField.focus();
 
@@ -88,7 +89,7 @@
                         && container.find(`#${$(e.target).attr("id")}`).length == 0
                     ) // ... nor a descendant of the container
                     {
-                        // dismiss();
+                        dismiss();
                     }
                 });
 
@@ -149,7 +150,17 @@
             if (null != this._inputField)
                 this.valueToField() }
 
-        get textValue() {
+        get isFieldEmpty() {
+            return (null == this.value) ||
+            ("" == this.value) ||
+            (undefined == this.value) }
+
+        get text() {
+            if (this.isFieldEmpty) {
+                return this.options.emptyText }
+            return this.valueToText() }
+
+        valueToText() {
             return this.value}
 
         submit() {
@@ -172,12 +183,13 @@
         }
         get inputForm() {
             if (null == this._inputForm) {
+                let iF = this.inputField;
+                let gB = this.generateButton();
                 this._inputForm = $("<div>").attr('id', `in-place-form-${this.id}`).addClass("form-inline").append(
                     $("<div>").addClass("form-group").append(
-                        this.inputField,
-                        this.generateButton().append(
-                            $("<i>").addClass('fa fa-check'))));
-                this.valueToField() }
+                        iF,
+                        gB.append(
+                            $("<i>").addClass('fa fa-check')))) }
 
             return this._inputForm;
         }
@@ -220,7 +232,7 @@
             if (null != this._inputField)
                 this.valueToField() }
 
-        get textValue() {
+        valueToText() {
             return moment(this._value, "YYYY-MM-DD").format("DD.MM.YYYY") }
     };
 
@@ -235,7 +247,7 @@
                 input.addClass(`form-check-input-${this.size}`) }
             return input }
 
-        get textValue() {
+        valueToText() {
             return this.options.data[this._value].text }
 
         valueToField() {
@@ -246,17 +258,18 @@
     };
 
     $ipe.InPlaceSelect2Input = class InPlaceSelect2Input extends $ipe.InPlaceTextInput {
+        constructor(options) {
+            super(options);
+            this.options.select2.data = this.options.data }
+
         get inputForm() {
             let need_init = null == this._inputForm;
             super.inputForm;
             if (need_init) {
                 this.inputField.select2(
-                    this.options.select2
-                );
-            }
+                    this.options.select2) }
+            return this._inputForm }
 
-            return this._inputForm;
-        }
         generateInputField() {
             let input = $("<select>")
                 .attr('id', `in-place-input-field-${this.id}`)
@@ -266,15 +279,28 @@
                 input.addClass(`form-control-${this.size}`) }
             return input }
 
-        get textValue() {
-            return "test";
-        }
+        valueToText() {
+            return this.options.select2.data[this._value].text }
+
+        valueToField() {
+            this._inputField.val(this._value).trigger('change') }
     };
 
     $ipe.defaults = {
         placeholder: "",
         value: null, // Значение поля
         size: "sm", // Размер элементов
+        styles: {
+            linkText: {
+                'border-bottom': "1px dashed gray",
+                'color': '#0275d8'
+            },
+            emptyText: {
+                'border-bottom': "1px dashed red",
+                'color': 'red',
+            }
+        },
+        emptyText: "Empty",
         url: null, // URL, куда отсылать данные. заменяет собой dataHandle
         dataHandle: () => {return new Promise((resolve) => {resolve()})}, // Обработчик данных. Должен возвращать promise
         submit: (data) => {}, // Вызывается после прихода данных
@@ -282,13 +308,6 @@
         ajax: {}, // Параметры ajax на отправку
         data: [], // Данные для полей
         select2: {} // настройки для select2
-    };
-
-    $ipe.style = {
-        linkText: {
-            'border-bottom': "1px dashed gray",
-            'color': '#0275d8'
-        }
     };
 
     $ipe.types = {

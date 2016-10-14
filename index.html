@@ -85,7 +85,7 @@ $("checkboxipe").inPlace();</code></pre></td>
         <td>Select2</td>
         <td><pre><code>&lt;&gt;&lt;&gt;</code></pre></td>
         <td>
-            <a id="select2ipe" data-type="select2" data-pk="3"></a>
+            <a id="select2ipe" data-type="select2" data-pk="3" data-value="2"></a>
         </td>
     </tr>
     </tbody>
@@ -124,9 +124,7 @@ $("checkboxipe").inPlace();</code></pre></td>
     $("#errajaxipe").inPlace({url: "/ajax2"});
     $("#checkboxipe").inPlace({data: [{id: 0, text: "Un"}, {id: 1, text: "ch"}]});
     $("#select2ipe").inPlace({
-        select2: {
-            data: [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }]
-        }
+        data: [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }]
     })
 
 </script>

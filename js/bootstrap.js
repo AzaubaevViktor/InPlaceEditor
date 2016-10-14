@@ -1165,7 +1165,7 @@ var Collapse = (function ($) {
 
         $(this._element).removeClass(ClassName.COLLAPSE).addClass(ClassName.COLLAPSING);
 
-        this._element.style[dimension] = 0;
+        this._element.defaults[dimension] = 0;
         this._element.setAttribute('aria-expanded', true);
 
         if (this._triggerArray.length) {
@@ -1177,7 +1177,7 @@ var Collapse = (function ($) {
         var complete = function complete() {
           $(_this4._element).removeClass(ClassName.COLLAPSING).addClass(ClassName.COLLAPSE).addClass(ClassName.IN);
 
-          _this4._element.style[dimension] = '';
+          _this4._element.defaults[dimension] = '';
 
           _this4.setTransitioning(false);
 
@@ -1194,7 +1194,7 @@ var Collapse = (function ($) {
 
         $(this._element).one(Util.TRANSITION_END, complete).emulateTransitionEnd(TRANSITION_DURATION);
 
-        this._element.style[dimension] = this._element[scrollSize] + 'px';
+        this._element.defaults[dimension] = this._element[scrollSize] + 'px';
       }
     }, {
       key: 'hide',
@@ -1214,7 +1214,7 @@ var Collapse = (function ($) {
         var dimension = this._getDimension();
         var offsetDimension = dimension === Dimension.WIDTH ? 'offsetWidth' : 'offsetHeight';
 
-        this._element.style[dimension] = this._element[offsetDimension] + 'px';
+        this._element.defaults[dimension] = this._element[offsetDimension] + 'px';
 
         Util.reflow(this._element);
 
@@ -1233,7 +1233,7 @@ var Collapse = (function ($) {
           $(_this5._element).removeClass(ClassName.COLLAPSING).addClass(ClassName.COLLAPSE).trigger(Event.HIDDEN);
         };
 
-        this._element.style[dimension] = 0;
+        this._element.defaults[dimension] = 0;
 
         if (!Util.supportsTransitionEnd()) {
           complete();
@@ -1885,7 +1885,7 @@ var Modal = (function ($) {
           document.body.appendChild(this._element);
         }
 
-        this._element.style.display = 'block';
+        this._element.defaults.display = 'block';
         this._element.removeAttribute('aria-hidden');
         this._element.scrollTop = 0;
 
@@ -1957,7 +1957,7 @@ var Modal = (function ($) {
       value: function _hideModal() {
         var _this11 = this;
 
-        this._element.style.display = 'none';
+        this._element.defaults.display = 'none';
         this._element.setAttribute('aria-hidden', 'true');
         this._showBackdrop(function () {
           $(document.body).removeClass(ClassName.OPEN);
@@ -2060,18 +2060,18 @@ var Modal = (function ($) {
         var isModalOverflowing = this._element.scrollHeight > document.documentElement.clientHeight;
 
         if (!this._isBodyOverflowing && isModalOverflowing) {
-          this._element.style.paddingLeft = this._scrollbarWidth + 'px';
+          this._element.defaults.paddingLeft = this._scrollbarWidth + 'px';
         }
 
         if (this._isBodyOverflowing && !isModalOverflowing) {
-          this._element.style.paddingRight = this._scrollbarWidth + 'px';
+          this._element.defaults.paddingRight = this._scrollbarWidth + 'px';
         }
       }
     }, {
       key: '_resetAdjustments',
       value: function _resetAdjustments() {
-        this._element.style.paddingLeft = '';
-        this._element.style.paddingRight = '';
+        this._element.defaults.paddingLeft = '';
+        this._element.defaults.paddingRight = '';
       }
     }, {
       key: '_checkScrollbar',
