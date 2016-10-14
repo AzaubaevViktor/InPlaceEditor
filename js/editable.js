@@ -31,7 +31,7 @@
 
         let submit = () => {
             $(document).off(".inPlace");
-            let oldValue = this.inPlaceInput._value; // так как если вызвать .value, он автоматически обновит
+            let oldValue = this.inPlaceInput._value; // так как если вызвать .value, он автоматически обновит значение из
             this.inPlaceInput.fieldToValue();
             let value = this.inPlaceInput.value;
             console.log(`Submit with ${value}`);
@@ -71,7 +71,7 @@
             options.dismiss(data);
         };
 
-        // События
+        // Инциализация всяких событий
         this.click(event => {
             if (STATE_DISABLE == this.state) {
                 this.inPlaceInput.inputForm.insertAfter(this);
@@ -79,33 +79,26 @@
                 this.hide();
                 this.inPlaceInput.inputField.focus();
 
-                $(document).on('mousedown.inPlace', document, (e) =>
-                {
+                $(document).on('mousedown.inPlace', document, (e) => {
                     let container = this.inPlaceInput.inputForm;
-
-                    if (
-                        !container.is($(e.target)) // if the target of the click isn't the container...
+                    // Проверяем, куда нажали
+                    if (!container.is($(e.target))
                         && container.has($(e.target)).length === 0
                         && container.find(`#${$(e.target).attr("id")}`).length == 0
-                    ) // ... nor a descendant of the container
-                    {
-                        dismiss();
-                    }
+                    ) {
+                        dismiss() }
                 });
 
                 this.inPlaceInput.inputForm.find("#inplace-submit").click(() => {
                     submit();
-                    return false;
-                });
+                    return false });
 
                 this.inPlaceInput.inputForm.keyup(e => {
                     if(e.keyCode == 13) {
                         submit();
                     } else if (e.keyCode == 27) {
-                        dismiss();
-                    }
-                    return false;
-                });
+                        dismiss() }
+                    return false });
             }
             this.state = !this.state;
             return false;
@@ -152,8 +145,8 @@
 
         get isFieldEmpty() {
             return (null == this.value) ||
-            ("" == this.value) ||
-            (undefined == this.value) }
+                ("" == this.value) ||
+                (undefined == this.value) }
 
         get text() {
             if (this.isFieldEmpty) {
