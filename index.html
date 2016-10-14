@@ -83,9 +83,32 @@ $("checkboxipe").inPlace();</code></pre></td>
     </tr>
     <tr>
         <td>Select2</td>
-        <td><pre><code>&lt;&gt;&lt;&gt;</code></pre></td>
+        <td><pre><code>&lt;&gt;a id="select2ipe" data-type="select2" data-pk="3" data-value="2"&lt;&gt;
+$("#select2ipe").inPlace({
+    data: [{ id: 0, text: 'enhancement' },
+            { id: 1, text: 'bug' },
+            { id: 2, text: 'duplicate' },
+            { id: 3, text: 'invalid' },
+            { id: 4, text: 'wontfix' }],
+    url: "/ajax1"
+})</code></pre></td>
         <td>
             <a id="select2ipe" data-type="select2" data-pk="3" data-value="2"></a>
+        </td>
+    </tr>
+    <tr>
+        <td>Select2 Multiple</td>
+        <td><pre><code>&lt;&gt;a id="select2multipe" data-type="select2" data-pk="3" data-value="2"&lt;&gt;
+$("#select2ipe").inPlace({
+    data: [{ id: 0, text: 'enhancement' },
+            { id: 1, text: 'bug' },
+            { id: 2, text: 'duplicate' },
+            { id: 3, text: 'invalid' },
+            { id: 4, text: 'wontfix' }],
+    url: "/ajax1"
+})</code></pre></td>
+        <td>
+            <a id="select2multipe" data-type="select2" data-pk="3" data-value="2"></a>
         </td>
     </tr>
     </tbody>
@@ -124,7 +147,15 @@ $("checkboxipe").inPlace();</code></pre></td>
     $("#errajaxipe").inPlace({url: "/ajax2"});
     $("#checkboxipe").inPlace({data: [{id: 0, text: "Un"}, {id: 1, text: "ch"}]});
     $("#select2ipe").inPlace({
-        data: [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }]
+        data: [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }],
+        url: "/ajax1"
+    });
+    $("#select2multipe").inPlace({
+        data: [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }],
+        url: "/ajax1",
+        select2: {
+            multiple: true
+        }
     })
 
 </script>

@@ -178,9 +178,6 @@
     };
 
     $ipe.InPlaceTextInput = class InPlaceTextInput extends $ipe.InPlaceInput {
-        constructor(options) {
-            super(options);
-        }
         get inputForm() {
             if (null == this._inputForm) {
                 let iF = this.inputField;
@@ -191,8 +188,7 @@
                         gB.append(
                             $("<i>").addClass('fa fa-check')))) }
 
-            return this._inputForm;
-        }
+            return this._inputForm }
 
         get inputField() {
             if (null == this._inputField) {
@@ -280,7 +276,11 @@
             return input }
 
         valueToText() {
-            return this.options.select2.data[this._value].text }
+            let val = this._value;
+            if (('string' == typeof val) || ('number' == typeof val)) {
+                val = [val]
+            }
+            return val.map((index) => {return this.options.select2.data[index].text}).join(", ") }
 
         valueToField() {
             this._inputField.val(this._value).trigger('change') }
