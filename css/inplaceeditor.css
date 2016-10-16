@@ -6,6 +6,7 @@
 .inplace-empty-text {
     border-bottom: 1px dashed red !important;
     color: #d9534f !important;
+    font-style: italic;
 }
 
 .select2 {
