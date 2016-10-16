@@ -13,10 +13,10 @@ let findByInDictField = function(arr, fieldName, value) {
     const STATE_DISABLE = false;
     const STATE_ENABLE = true;
     $.fn.inPlace = function (action) {
-        let options = $.extend({id: this.attr('id')}, $ipe.defaults);
+        let options = $.extend(true, {id: this.attr('id')}, $ipe.defaults);
         // Initialization
         if ('object' == (typeof action)) {
-            $.extend(options, action);
+            $.extend(true, options, action);
         } else if ((undefined == action) || ('enable' == action)) {
         } else if ( action === "disable" ) {
             // Disable code.
@@ -129,7 +129,7 @@ let findByInDictField = function(arr, fieldName, value) {
 
     $ipe.InPlaceInput = class InPlaceInput {
         constructor(options) {
-            this.options = options;
+            this.options = $.extend(true, {}, options);
             this.id = options.id;
             this.type = options.type;
             this.placeholder = options.placeholder;
@@ -237,7 +237,11 @@ let findByInDictField = function(arr, fieldName, value) {
             if (!m.isValid()) {
                 m = moment(newVal, "YYYY-MM-DD");
             }
-            this._value = m.format("YYYY-MM-DD");
+            if (!m.isValid()) {
+                this._value = null;
+            } else {
+                this._value = m.format("YYYY-MM-DD");
+            }
             if (null != this._inputField)
                 this.valueToField() }
 
@@ -257,7 +261,7 @@ let findByInDictField = function(arr, fieldName, value) {
             return input }
 
         valueToText() {
-            return this.options.data[this._value].text }
+            return findByInDictField(this.options.data, 'id', this._value)[0].text }
 
         valueToField() {
             this._inputField.prop("checked", 1 == this._value) }
@@ -285,7 +289,7 @@ let findByInDictField = function(arr, fieldName, value) {
     $ipe.InPlaceSelect2Input = class InPlaceSelect2Input extends $ipe.InPlaceTextInput {
         constructor(options) {
             super(options);
-            this.options.select2.data = this.options.data }
+            this.options.select2.data = $.extend(true, [], this.options.data) }
 
         get inputForm() {
             let need_init = null == this._inputForm;
