@@ -1,3 +1,14 @@
+// Функция для поиска по спискам внутри массива по полю
+let findByInDictField = function(arr, fieldName, value) {
+    let results = [];
+    for (let d of arr) {
+        if (value == d[fieldName]) {
+            results.push(d);
+        }
+    }
+    return results;
+};
+
 (function( $ ) {
     const STATE_DISABLE = false;
     const STATE_ENABLE = true;
@@ -280,7 +291,7 @@
             if (('string' == typeof val) || ('number' == typeof val)) {
                 val = [val]
             }
-            return val.map((index) => {return this.options.select2.data[index].text}).join(", ") }
+            return val.map((index) => {return findByInDictField(this.options.select2.data, 'id', index)[0].text}).join(", ") }
 
         valueToField() {
             this._inputField.val(this._value).trigger('change') }
