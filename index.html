@@ -78,6 +78,12 @@ $("errajaxipe").inPlace();</code></pre></td>
         <td><a id="errajaxipe" data-type="text" data-pk="3">Learn more</a></td>
     </tr>
     <tr>
+        <td>Date ERR AJAX</td>
+        <td><pre><code>&lt;a id="dateerripe" data-type="date" data-value="30.11.2014"&gt;&lt;/a&gt;
+$("#dateerripe").inPlace({url: "/ajax2"});</code></pre></td>
+        <td><a id="dateerripe" data-type="date" data-value="30.11.2014"></a></td>
+    </tr>
+    <tr>
         <td>CheckBox</td>
         <td><pre><code>&lt;a id="checkboxipe" data-type="checkbox" data-pk="3"&gt;&lt;/a&gt;
 $("checkboxipe").inPlace();</code></pre></td>
@@ -147,6 +153,7 @@ $("#select2multipe").inPlace({
     $("#timeipe").inPlace();
     $("#ajaxipe").inPlace({url: "/ajax1"});
     $("#errajaxipe").inPlace({url: "/ajax2"});
+    $("#dateerripe").inPlace({url: "/ajax2"});
     $("#checkboxipe").inPlace({data: [{id: 0, text: "Un"}, {id: 1, text: "ch"}]});
     $("#select2ipe").inPlace({
         data: [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }],

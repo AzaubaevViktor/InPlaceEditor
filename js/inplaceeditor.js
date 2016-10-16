@@ -38,7 +38,6 @@
 
         let submit = () => {
             $(document).off(".inPlace");
-            let oldValue = this.inPlaceInput._value; // так как если вызвать .value, он автоматически обновит значение из
             this.inPlaceInput.fieldToValue();
             let value = this.inPlaceInput.value;
             console.log(`Submit with ${value}`);
@@ -58,7 +57,7 @@
 
                 options.submit(data);
             }).catch((error) => {
-                this.inPlaceInput._value = oldValue;
+                this.inPlaceInput._value = this.oldValue;
                 this.inPlaceInput.inputField.prop('disabled', false).addClass("form-control-danger");
                 this.inPlaceInput.inputForm.addClass("has-danger").find("inplace-submit").prop('disabled', false);
             })
@@ -81,6 +80,7 @@
         // Инциализация всяких событий
         this.click(event => {
             if (STATE_DISABLE == this.state) {
+                this.oldValue = this.inPlaceInput.value;
                 this.inPlaceInput.inputForm.insertAfter(this);
                 this.inPlaceInput.valueToField();
                 this.hide();
