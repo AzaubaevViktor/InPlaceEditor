@@ -112,9 +112,9 @@ let findByInDictField = function(arr, fieldName, value) {
                     return false });
 
                 this.inPlaceInput.inputForm.keyup(e => {
-                    if(e.keyCode == 13) {
+                    if (this.inPlaceInput.checkSubmitKeys(e)) {
                         submit();
-                    } else if (e.keyCode == 27) {
+                    } else if (this.inPlaceInput.checkDismissKeys(e)) {
                         dismiss() }
                     return false });
             }
@@ -139,6 +139,8 @@ let findByInDictField = function(arr, fieldName, value) {
 
             this._inputField = null;
             this._inputForm = null }
+        checkSubmitKeys(event) {return event.keyCode == 13};
+        checkDismissKeys(event) {return (event.keyCode == 27)};
         get inputForm() {};
         get inputField() {};
         generateInputField() {};
@@ -264,6 +266,22 @@ let findByInDictField = function(arr, fieldName, value) {
             this._value = this._inputField.prop('checked') ? 1 : 0 }
     };
 
+    $ipe.InplaceTextAreaInput = class InplaceTextAreaInput extends $ipe.InPlaceTextInput {
+        constructor(options) {
+            super(options);
+            this.rows = this.options.rows;
+        }
+        generateInputField() {
+            let textarea = $("<textarea>").attr('id', `in-place-input-field-${this.id}`)
+                .attr('placeholder', this.placeholder)
+                .attr('rows', this.rows);
+            textarea.addClass("form-control");
+            if (this.size) {
+                textarea.addClass(`form-check-input-${this.size}`) }
+            return textarea }
+        checkSubmitKeys(event) {return event.ctrlKey && event.keyCode == 13}
+    };
+
     $ipe.InPlaceSelect2Input = class InPlaceSelect2Input extends $ipe.InPlaceTextInput {
         constructor(options) {
             super(options);
@@ -311,7 +329,8 @@ let findByInDictField = function(arr, fieldName, value) {
             dataType: 'json'
         }, // Параметры ajax на отправку
         data: [], // Данные для полей
-        select2: {} // настройки для select2
+        select2: {}, // настройки для select2
+        rows: 4 // Для textarea
     };
 
     $ipe.types = {
@@ -340,6 +359,8 @@ let findByInDictField = function(arr, fieldName, value) {
         checkbox: {
             InputConstructor: $ipe.InPlaceCheckBoxInput },
         select2: {
-            InputConstructor: $ipe.InPlaceSelect2Input }
+            InputConstructor: $ipe.InPlaceSelect2Input },
+        textarea: {
+            InputConstructor: $ipe.InplaceTextAreaInput },
     };
 }( jQuery ));
