@@ -20,7 +20,7 @@
 
         if (null != options.url) {
             options.dataHandle = data => {
-                let ajaxOpt = $.extend({data, url: options.url}, options.ajax);
+                let ajaxOpt = $.extend({data: JSON.stringify(data), url: options.url}, options.ajax);
                 return $.ajax(ajaxOpt)
             };
         }
@@ -295,7 +295,10 @@
         dataHandle: data => {return new Promise((resolve) => {resolve()})}, // Обработчик данных. Должен возвращать promise
         submit: data => {}, // Обрабатывает данные, которые вернёт dataHandle
         dismiss: data => {}, // Вызывается в случае отмены редактирования
-        ajax: {}, // Параметры ajax на отправку
+        ajax: {
+            contentType: 'application/json',
+            dataType: 'json'
+        }, // Параметры ajax на отправку
         data: [], // Данные для полей
         select2: {} // настройки для select2
     };
