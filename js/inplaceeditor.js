@@ -164,9 +164,10 @@ let findByInDictField = function(arr, fieldName, value) {
                 this.valueToField() }
 
         get isFieldEmpty() {
-            return (null == this.value) ||
-                ("" == this.value) ||
-                (undefined == this.value) }
+            return (null === this.value) ||
+                ("" === this.value) ||
+                (undefined === this.value) ||
+                (false === this.value) }
 
         get text() {
             if (this.isFieldEmpty) {
@@ -260,14 +261,24 @@ let findByInDictField = function(arr, fieldName, value) {
                 input.addClass(`form-check-input-${this.size}`) }
             return input }
 
+        set value(newVal) {
+            newVal = !!newVal;
+            super.value = newVal;
+        }
+
+        get value() {
+            if (null != this._inputField)
+                this.fieldToValue();
+            return this._value }
+
         valueToText() {
-            return findByInDictField(this.options.data, 'id', this._value)[0].text }
+            return findByInDictField(this.options.data, 'id', this._value ? 1 : 0)[0].text }
 
         valueToField() {
-            this._inputField.prop("checked", 1 == this._value) }
+            this._inputField.prop("checked", this._value) }
 
         fieldToValue() {
-            this._value = this._inputField.prop('checked') ? 1 : 0 }
+            this._value = this._inputField.prop('checked') }
     };
 
     $ipe.InplaceTextAreaInput = class InplaceTextAreaInput extends $ipe.InPlaceTextInput {
