@@ -130,12 +130,12 @@ let findByInDictField = function(arr, fieldName, value) {
     $ipe.InPlaceInput = class InPlaceInput {
         constructor(options) {
             this.options = $.extend(true, {}, options);
-            this.id = options.id;
-            this.type = options.type;
-            this.placeholder = options.placeholder;
-            this.size = options.size;
+            this.id = this.options.id;
+            this.type = this.options.type;
+            this.placeholder = this.options.placeholder;
+            this.size = this.options.size;
             this._value = null;
-            this.value = options.value;
+            this.value = this.options.value;
 
             this._inputField = null;
             this._inputForm = null }
@@ -289,7 +289,8 @@ let findByInDictField = function(arr, fieldName, value) {
     $ipe.InPlaceSelect2Input = class InPlaceSelect2Input extends $ipe.InPlaceTextInput {
         constructor(options) {
             super(options);
-            this.options.select2.data = $.extend(true, [], this.options.data) }
+            this.options.select2.data = this.options.select2.data || [];
+            this.options.select2.data = $.extend(true, [], $.merge(this.options.select2.data, this.options.data)) }
 
         get inputForm() {
             let need_init = null == this._inputForm;
@@ -313,7 +314,14 @@ let findByInDictField = function(arr, fieldName, value) {
             if (('string' == typeof val) || ('number' == typeof val)) {
                 val = [val]
             }
-            return val.map((index) => {return findByInDictField(this.options.select2.data, 'id', index)[0].text}).join(", ") }
+            if (this.options.showRawValue) {
+                return val;
+            } else {
+                return val.map((index) => {
+                    return findByInDictField(this.options.select2.data, 'id', index)[0].text
+                }).join(", ")
+            }
+        }
 
         valueToField() {
             this._inputField.val(this._value).trigger('change') }
@@ -334,7 +342,8 @@ let findByInDictField = function(arr, fieldName, value) {
         }, // Параметры ajax на отправку
         data: [], // Данные для полей
         select2: {}, // настройки для select2
-        rows: 4 // Для textarea
+        rows: 4, // Для textarea
+        showRawValue: false,
     };
 
     $ipe.types = {
