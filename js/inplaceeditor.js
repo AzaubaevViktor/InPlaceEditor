@@ -20,15 +20,17 @@ let findByInDictField = function(arr, fieldName, value) {
         } else if ((undefined == action) || ('enable' == action)) {
         } else if ( action === "disable" ) {
             // Disable code.
-            console.error("Not implemented")
+            console.error("Not implemented");
+            return;
         } else return this;
 
         // Заполнение дополнительных полей
-        $.extend(options, this.data());
+        $.extend(true, options, this.data());
         this.state = this.state || STATE_DISABLE;
         options.value = this.text() || options.value;
         this.inPlaceInput = this.inPlaceInput || new $ipe.types[options.type].InputConstructor(options);
 
+        // Иницализация функции, передающей данные на сервер
         if (null != options.url) {
             options.dataHandle = data => {
                 let ajaxOpt = $.extend({data: JSON.stringify(data), url: options.url}, options.ajax);
@@ -38,7 +40,7 @@ let findByInDictField = function(arr, fieldName, value) {
 
         let updateText = () => {
             this.text(this.inPlaceInput.text);
-            if (this.inPlaceInput.isFieldEmpty) {
+            if (this.inPlaceInput.isValueEmpty) {
                 this.removeClass('inplace-link-text').addClass('inplace-empty-text')
             } else {
                 this.removeClass('inplace-empty-text').addClass('inplace-link-text')
@@ -47,20 +49,50 @@ let findByInDictField = function(arr, fieldName, value) {
 
         updateText();
 
+        let disableInputs = () => {
+            this.inPlaceInput.inputField.prop('disabled', true);
+            this.inPlaceInput.inputForm.find("inplace-submit").prop('disabled', true);
+            $(document).off(".inPlace");
+        };
+
+        let enableInputs = () => {
+            this.inPlaceInput.inputField.prop('disabled', false).addClass("form-control-danger");
+
+            $(document).on('mousedown.inPlace', document, (e) => {
+                let container = this.inPlaceInput.inputForm;
+                // Проверяем, куда нажали
+                if (!container.is($(e.target))
+                    && container.has($(e.target)).length === 0
+                    && container.find(`#${$(e.target).attr("id")}`).length == 0
+                ) {
+                    dismiss() }
+            });
+            this.inPlaceInput.inputForm.find("#inplace-submit").on('click.inPlace', () => {
+                submit();
+                return false });
+
+            this.inPlaceInput.inputForm.on('keyup.inPlace', e => {
+                if (this.inPlaceInput.checkSubmitKeys(e)) {
+                    submit();
+                } else if (this.inPlaceInput.checkDismissKeys(e)) {
+                    dismiss() }
+                return false });
+        };
+
         let submit = () => {
             $(document).off(".inPlace");
-            this.inPlaceInput.fieldToValue();
+            this.inPlaceInput.updateValue();
             let value = this.inPlaceInput.value;
             console.log(`Submit with ${value}`);
             let data = {
-                name: this.attr('id'),
+                name: options.id,
                 value,
                 pk: options.pk };
 
-            this.inPlaceInput.inputField.prop('disabled', true);
-            this.inPlaceInput.inputForm.find("inplace-submit").prop('disabled', true);
+            disableInputs();
 
             options.dataHandle(data).then((response) => {
+                // Всё ок
                 this.inPlaceInput.submit();
                 this.show();
                 updateText();
@@ -68,15 +100,17 @@ let findByInDictField = function(arr, fieldName, value) {
 
                 options.submit(data);
             }).catch((error) => {
-                this.inPlaceInput._value = this.oldValue;
-                this.inPlaceInput.inputField.prop('disabled', false).addClass("form-control-danger");
+                // Всё плохо
+                console.error(error);
                 this.inPlaceInput.inputForm.addClass("has-danger").find("inplace-submit").prop('disabled', false);
+                this.inPlaceInput.value = this.oldValue;
+                enableInputs();
             })
         };
 
         let dismiss = () => {
             console.log("Dismiss");
-            $(document).off(".inPlace");
+            disableInputs();
             this.inPlaceInput.dismiss();
             this.show();
             this.state = !this.state;
@@ -92,31 +126,12 @@ let findByInDictField = function(arr, fieldName, value) {
         this.click(event => {
             if (STATE_DISABLE == this.state) {
                 this.oldValue = this.inPlaceInput.value;
-                this.inPlaceInput.inputForm.insertAfter(this);
-                this.inPlaceInput.valueToField();
                 this.hide();
+                this.inPlaceInput.inputForm.insertAfter(this);
+                this.inPlaceInput.updateField();
                 this.inPlaceInput.inputField.focus();
 
-                $(document).on('mousedown.inPlace', document, (e) => {
-                    let container = this.inPlaceInput.inputForm;
-                    // Проверяем, куда нажали
-                    if (!container.is($(e.target))
-                        && container.has($(e.target)).length === 0
-                        && container.find(`#${$(e.target).attr("id")}`).length == 0
-                    ) {
-                        dismiss() }
-                });
-
-                this.inPlaceInput.inputForm.find("#inplace-submit").click(() => {
-                    submit();
-                    return false });
-
-                this.inPlaceInput.inputForm.keyup(e => {
-                    if (this.inPlaceInput.checkSubmitKeys(e)) {
-                        submit();
-                    } else if (this.inPlaceInput.checkDismissKeys(e)) {
-                        dismiss() }
-                    return false });
+                enableInputs();
             }
             this.state = !this.state;
             return false;
@@ -139,77 +154,114 @@ let findByInDictField = function(arr, fieldName, value) {
 
             this._inputField = null;
             this._inputForm = null }
+        // Условие для подтвеждения данных через нажатия кнопкок
         checkSubmitKeys(event) {return event.keyCode == 13};
+
+        // Условие для отмены ввода через нажатия кнопкок
         checkDismissKeys(event) {return (event.keyCode == 27)};
-        get inputForm() {};
-        get inputField() {};
-        generateInputField() {};
-        generateButton() {
-            let btn = $("<a>").attr('id', 'inplace-submit');
-            btn.addClass("btn btn-success");
-            if (this.size) {
-                btn.addClass(`btn-${this.size}`) }
-            return btn }
-        removeField() {};
-        valueToField() {};
-        fieldToValue() {};
-        get value() {
-            if (null != this._inputField)
-                this.fieldToValue();
-            return this._value }
 
-        set value(newVal) {
-            this._value = newVal;
-            if (null != this._inputField)
-                this.valueToField() }
-
-        get isFieldEmpty() {
-            return (null === this.value) ||
-                ("" === this.value) ||
-                (undefined === this.value) ||
-                (false === this.value) }
-
-        get text() {
-            if (this.isFieldEmpty) {
-                return this.options.emptyText }
-            return this.valueToText() }
-
-        valueToText() {
-            return this.value}
-
-        submit() {
-            this.fieldToValue();
-            this.removeForm();
-            return this.value }
-
-        removeForm() {
-            this._inputField.remove();
-            this._inputForm.remove();
-            this._inputField = this._inputForm = null }
-
-        dismiss() {
-            this.removeForm() }
-    };
-
-    $ipe.InPlaceTextInput = class InPlaceTextInput extends $ipe.InPlaceInput {
+        // Возвращает форму ввода
         get inputForm() {
             if (null == this._inputForm) {
-                let iF = this.inputField;
-                let gB = this.generateButton();
-                this._inputForm = $("<div>").attr('id', `in-place-form-${this.id}`).addClass("form-inline").append(
-                    $("<div>").addClass("form-group").append(
-                        iF,
-                        gB.append(
-                            $("<i>").addClass('fa fa-check')))) }
+                this._generateForm();
+            }
 
             return this._inputForm }
 
+        // Создаёт форму
+        _generateForm() {
+            let iF = this.inputField;
+            let gB = this._generateButton();
+            this._inputForm = $("<div>").attr('id', `in-place-form-${this.id}`).addClass("form-inline").append(
+                $("<div>").addClass("form-group").append(
+                    iF,
+                    gB.append(
+                        $("<i>").addClass('fa fa-check')))) }
+
+        // Возвращает поле ввода
         get inputField() {
             if (null == this._inputField) {
                 this._inputField = this.generateInputField();
             }
             return this._inputField }
 
+        // Удаляет форму ввода
+        removeForm() {
+            this._inputField.remove();
+            this._inputForm.remove();
+            this._inputField = this._inputForm = null }
+
+        // Функция генерирует новое поле ввода
+        _generateInputField() {};
+
+        // Функция генерирует кнопку подтверждения
+        _generateButton() {
+            let btn = $("<a>").attr('id', 'inplace-submit');
+            btn.addClass("btn btn-success");
+            if (this.size) {
+                btn.addClass(`btn-${this.size}`) }
+            return btn }
+
+        // Функция обновляет значение в поле, если оно существует
+        updateField() {
+            if (null != this._inputField) {
+                this._valueToField();
+            } else {
+                console.error(this, "Input field does not exist!") }}
+
+        // Функция обновляет значение в поле
+        _valueToField() {
+            this._inputField.val(this._value)}
+
+        // Обновляет внутреннее значение value, если поле ввода существует
+        updateValue() {
+            if (null != this._inputField) {
+                this._fieldToValue();
+            } else {
+                console.error(this, "Input field does not exist!") }}
+
+        // Обновляет внутреннее значение value
+        _fieldToValue() {
+            this.value = this._inputField.val()};
+
+        // Возвращает внутреннее значение
+        get value() {
+            return this._value }
+
+        // Преобразовывает внешнее значение во внутреннее
+        set value(newVal) {
+            this._value = newVal }
+
+        // Проверяет, пустое ли значение
+        get isValueEmpty() {
+            console.log("Check value to Empty, value: ", this.value);
+            return (null === this.value) ||
+                ("" === this.value) ||
+                (undefined === this.value) ||
+                (false === this.value) }
+
+        // Преобразовывает внутреннее значение в текст, которыое будет отображаться
+        get text() {
+            if (this.isValueEmpty) {
+                return this.options.emptyText }
+            return this._valueToText() }
+
+        // Преобразовывает внутреннее значение в текст
+        _valueToText() {
+            return this.value}
+
+        // Действия при submit
+        submit() {
+            this._fieldToValue();
+            this.removeForm();
+            return this.value }
+
+        // Действия при dismiss
+        dismiss() {
+            this.removeForm() }
+    };
+
+    $ipe.InPlaceTextInput = class InPlaceTextInput extends $ipe.InPlaceInput {
         generateInputField() {
             let input = $("<input>")
                 .attr('id', `in-place-input-field-${this.id}`)
@@ -219,19 +271,11 @@ let findByInDictField = function(arr, fieldName, value) {
             if (this.size) {
                 input.addClass(`form-control-${this.size}`) }
             return input }
-
-        valueToField() {
-            this._inputField.val(this._value) }
-
-        fieldToValue() {
-            this._value = this._inputField.val() }
     };
 
     $ipe.InPlaceDateInput = class InPlaceDateInput extends $ipe.InPlaceTextInput {
         get value() {
-            if (null != this._inputField)
-                this._value = this._inputField.val();
-            return this._value }
+            return super.value }
 
         set value(newVal) {
             let m = moment(newVal, "DD.MM.YYYY");
@@ -242,11 +286,9 @@ let findByInDictField = function(arr, fieldName, value) {
                 this._value = null;
             } else {
                 this._value = m.format("YYYY-MM-DD");
-            }
-            if (null != this._inputField)
-                this.valueToField() }
+            }}
 
-        valueToText() {
+        _valueToText() {
             return moment(this._value, "YYYY-MM-DD").format("DD.MM.YYYY") }
     };
 
@@ -267,25 +309,23 @@ let findByInDictField = function(arr, fieldName, value) {
         }
 
         get value() {
-            if (null != this._inputField)
-                this.fieldToValue();
-            return this._value }
+            return super.value }
 
-        valueToText() {
+        _valueToText() {
             return findByInDictField(this.options.data, 'id', this._value ? 1 : 0)[0].text }
 
-        valueToField() {
+        _valueToField() {
             this._inputField.prop("checked", this._value) }
 
-        fieldToValue() {
+        _fieldToValue() {
             this._value = this._inputField.prop('checked') }
     };
 
     $ipe.InplaceTextAreaInput = class InplaceTextAreaInput extends $ipe.InPlaceTextInput {
         constructor(options) {
             super(options);
-            this.rows = this.options.rows;
-        }
+            this.rows = this.options.rows }
+
         generateInputField() {
             let textarea = $("<textarea>").attr('id', `in-place-input-field-${this.id}`)
                 .attr('placeholder', this.placeholder)
@@ -294,21 +334,34 @@ let findByInDictField = function(arr, fieldName, value) {
             if (this.size) {
                 textarea.addClass(`form-check-input-${this.size}`) }
             return textarea }
+
         checkSubmitKeys(event) {return event.ctrlKey && event.keyCode == 13}
     };
 
     $ipe.InPlaceSelect2Input = class InPlaceSelect2Input extends $ipe.InPlaceTextInput {
         constructor(options) {
             super(options);
-            this.options.select2.data = this.options.select2.data || [];
-            this.options.select2.data = $.extend(true, [], $.merge(this.options.select2.data, this.options.data)) }
+            console.group(`InPlaceSelect2Input Init for ${this.options.id}`);
+            console.log("Options select2 before extend:", this.options.select2);
+            if (this.options.customValueSelect2) {
+                this.options.select2.data = [{id: this.text, text: this.text}]
+            } else {
+                this.options.select2.data = this.options.select2.data || [];
+                this.options.select2.data = $.extend(true, [], $.unique($.merge(this.options.select2.data, this.options.data)));
+            }
+            console.log("Options select2 after extend:", this.options.select2);
+            console.groupEnd();
+        }
+
+        // TODO: applyCustomData
 
         get inputForm() {
             let need_init = null == this._inputForm;
             super.inputForm;
             if (need_init) {
+                console.log("Init select2 input field with ", this.options.select2);
                 this.inputField.select2(
-                    this.options.select2) }
+                    $.extend(true, {}, this.options.select2)) }
             return this._inputForm }
 
         generateInputField() {
@@ -320,22 +373,50 @@ let findByInDictField = function(arr, fieldName, value) {
                 input.addClass(`form-control-${this.size}`) }
             return input }
 
-        valueToText() {
-            let val = this._value;
-            if (('string' == typeof val) || ('number' == typeof val)) {
-                val = [val]
+        set value(newVal) {
+            console.log("New Value: ", newVal);
+            // TODO: Починить!
+            if (('string' == typeof newVal) &&
+                !('number' == typeof newVal) &&
+                newVal.includes(",")
+            ) {
+                this._value = newVal.split(",").map((val) => val.trim());
+                if (1 == this._value.length) {
+                    this._value = this._value[0] }
+            } else {
+                this._value = newVal
             }
-            if (this.options.showRawValue) {
+        }
+
+        get value() {
+            return super.value;
+        }
+
+        _valueToText() {
+            let val = this._value;
+
+            if (this.options.customValueSelect2) {
                 return val;
             } else {
+                if (('string' == typeof val) || ('number' == typeof val)) {
+                    val = [val] }
+                console.log(`_valueToText; value:`, val, "options.select2:", this.options.select2);
                 return val.map((index) => {
                     return findByInDictField(this.options.select2.data, 'id', index)[0].text
                 }).join(", ")
             }
         }
 
-        valueToField() {
+        _valueToField() {
             this._inputField.val(this._value).trigger('change') }
+
+        _fieldToValue() {
+            super._fieldToValue();
+            if (this.options.customValueSelect2) {
+                // Так как он всё равно показывает сырое значение, можно не ебаться
+                this.options.select2.data = [{id: this.text, text: this.text}]
+            }
+        }
     };
 
     $ipe.defaults = {
@@ -354,7 +435,7 @@ let findByInDictField = function(arr, fieldName, value) {
         data: [], // Данные для полей
         select2: {}, // настройки для select2
         rows: 4, // Для textarea
-        showRawValue: false,
+        customValueSelect2: false, // В select2 позволяет работать со значениями пользователей
     };
 
     $ipe.types = {
