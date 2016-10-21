@@ -234,7 +234,6 @@ let findByInDictField = function(arr, fieldName, value) {
 
         // Проверяет, пустое ли значение
         get isValueEmpty() {
-            console.log("Check value to Empty, value: ", this.value);
             return (null === this.value) ||
                 ("" === this.value) ||
                 (undefined === this.value) ||
@@ -343,17 +342,17 @@ let findByInDictField = function(arr, fieldName, value) {
             super(options);
             console.group(`InPlaceSelect2Input Init for ${this.options.id}`);
             console.log("Options select2 before extend:", this.options.select2);
-            if (this.options.customValueSelect2) {
-                this.options.select2.data = [{id: this.text, text: this.text}]
-            } else {
+            if (!this.options.customValueSelect2) {
                 this.options.select2.data = this.options.select2.data || [];
                 this.options.select2.data = $.extend(true, [], $.unique($.merge(this.options.select2.data, this.options.data)));
+            } else {
+                this._initDataFromValue();
             }
-            console.log("Options select2 after extend:", this.options.select2);
+            console.log(`Options select2 after extend:`, this.options.select2);
             console.groupEnd();
         }
 
-        // TODO: applyCustomData
+        checkSubmitKeys(event) {return event.ctrlKey && event.keyCode == 13}
 
         get inputForm() {
             let need_init = null == this._inputForm;
@@ -389,14 +388,35 @@ let findByInDictField = function(arr, fieldName, value) {
         }
 
         get value() {
-            return super.value;
+            return super.value }
+
+        _initDataFromValue() {
+            console.log("Try to init data from value");
+            let data = this._value;
+            if (this.options.customValueSelect2 && (!this.isValueEmpty)) {
+                let values = null;
+                if ("string" == typeof this._value) {
+                    values = [this._value]
+                } else {
+                    values = this._value
+                }
+                this.options.select2.data =
+                    values.map((val) => {
+                        return {id: val, text: val}
+                    });
+                console.log("Set data", console.log(this.options.select2.data));
+            }
         }
 
         _valueToText() {
             let val = this._value;
 
             if (this.options.customValueSelect2) {
-                return val;
+                if ('string' == typeof val) {
+                    return val;
+                } else {
+                    return val.join(", ")
+                }
             } else {
                 if (('string' == typeof val) || ('number' == typeof val)) {
                     val = [val] }
@@ -408,14 +428,13 @@ let findByInDictField = function(arr, fieldName, value) {
         }
 
         _valueToField() {
-            this._inputField.val(this._value).trigger('change') }
+            console.log(`Set select2 '${this.options.id}' value`, this._value);
+            this.inputField.val(this._value).trigger('change');
+        }
 
         _fieldToValue() {
             super._fieldToValue();
-            if (this.options.customValueSelect2) {
-                // Так как он всё равно показывает сырое значение, можно не ебаться
-                this.options.select2.data = [{id: this.text, text: this.text}]
-            }
+            this._initDataFromValue();
         }
     };
 

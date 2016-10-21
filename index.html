@@ -108,17 +108,17 @@ $("#select2ipe").inPlace({
         <td>Select2 Multiple</td>
         <td><pre><code>&lt;&gt;a id="select2multipe" data-type="select2" data-pk="3" data-value="2"&lt;&gt;
 $("#select2multipe").inPlace({
-    data: [{ id: 0, text: 'enhancement' },
-            { id: 1, text: 'bug' },
-            { id: 2, text: 'duplicate' },
-            { id: 3, text: 'invalid' },
-            { id: 4, text: 'wontfix' }],
-    url: "/ajax1"
+        data: [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }],
+        url: "/ajax1",
+        select2: {
+            multiple: true
+        }
 })</code></pre></td>
         <td>
             <a id="select2multipe" data-type="select2" data-pk="3" data-value="2"></a>
         </td>
     </tr>
+
     </tbody>
 </table>
 
