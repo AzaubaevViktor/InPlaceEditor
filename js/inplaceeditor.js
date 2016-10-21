@@ -28,6 +28,10 @@ let findByInDictField = function(arr, fieldName, value) {
         $.extend(true, options, this.data());
         this.state = this.state || STATE_DISABLE;
         options.value = this.text() || options.value;
+        if (!$ipe.types[options.type]) {
+            console.error(`Поле ввода с типом '${options.type}' не сущесвует/не реализовано в inPlace.`);
+            return;
+        }
         this.inPlaceInput = this.inPlaceInput || new $ipe.types[options.type].InputConstructor(options);
 
         // Иницализация функции, передающей данные на сервер
