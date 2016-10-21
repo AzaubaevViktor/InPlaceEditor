@@ -238,10 +238,16 @@ let findByInDictField = function(arr, fieldName, value) {
 
         // Проверяет, пустое ли значение
         get isValueEmpty() {
-            return (null === this.value) ||
+            if ((null === this.value) ||
                 ("" === this.value) ||
                 (undefined === this.value) ||
-                (false === this.value) }
+                (false === this.value)) {
+                return true;
+            } else if (this.value.length == 0) {
+                return true;
+            }
+            return false;
+        }
 
         // Преобразовывает внутреннее значение в текст, которыое будет отображаться
         get text() {
@@ -378,11 +384,10 @@ let findByInDictField = function(arr, fieldName, value) {
 
         set value(newVal) {
             console.log("New Value: ", newVal);
-            // TODO: Починить!
             if (('string' == typeof newVal) &&
                 !('number' == typeof newVal) &&
-                newVal.includes(",")
-            ) {
+                newVal.includes(","))
+            {
                 this._value = newVal.split(",").map((val) => val.trim());
                 if (1 == this._value.length) {
                     this._value = this._value[0] }
@@ -438,6 +443,14 @@ let findByInDictField = function(arr, fieldName, value) {
 
         _fieldToValue() {
             super._fieldToValue();
+
+            if (this.options.numericId) {
+                if ('string' == this._value) {
+                    this._value *= 1
+                } else if ('object' == typeof this._value) {
+                    this._value = this._value.map((v) => v * 1)
+                }
+            }
             this._initDataFromValue();
         }
     };
@@ -459,6 +472,8 @@ let findByInDictField = function(arr, fieldName, value) {
         select2: {}, // настройки для select2
         rows: 4, // Для textarea
         customValueSelect2: false, // В select2 позволяет работать со значениями пользователей
+        // Когда отключено, значения превращаются в цифры
+        numericId: true // Преобразовывет значения сырых данных в числа для select2
     };
 
     $ipe.types = {
