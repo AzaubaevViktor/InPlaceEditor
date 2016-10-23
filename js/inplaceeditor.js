@@ -1,5 +1,6 @@
 // Функция для поиска по спискам внутри массива по полю
 let findByInDictField = function(arr, fieldName, value) {
+    "use strict";
     let results = [];
     for (let d of arr) {
         if (value == d[fieldName]) {
@@ -10,19 +11,23 @@ let findByInDictField = function(arr, fieldName, value) {
 };
 
 (function( $ ) {
+    "use strict";
     const STATE_DISABLE = false;
     const STATE_ENABLE = true;
     $.fn.inPlace = function (action) {
         let options = $.extend(true, {id: this.attr('id')}, $ipe.defaults);
         // Initialization
-        if ('object' == (typeof action)) {
+        if ('object' === (typeof action)) {
             $.extend(true, options, action);
-        } else if ((undefined == action) || ('enable' == action)) {
+        } else if ((undefined === action) || ('enable' === action)) {
+            console.log("Activate")
         } else if ( action === "disable" ) {
             // Disable code.
             console.error("Not implemented");
             return;
-        } else return this;
+        } else {
+            return this;
+        }
 
         // Заполнение дополнительных полей
         $.extend(true, options, this.data());
