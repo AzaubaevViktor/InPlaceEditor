@@ -306,6 +306,26 @@ let findByInDictField = function(arr, fieldName, value) {
             return moment(this._value, "YYYY-MM-DD").format("DD.MM.YYYY") }
     };
 
+    $ipe.InPlaceDateTimeInput = class InPlaceDateTimeInput extends $ipe.InPlaceTextInput {
+        get value() {
+            return super.value }
+
+        set value(newVal) {
+            let m = moment(newVal, "DD.MM.YYYY HH:mm");
+            if (!m.isValid()) {
+                m = moment(newVal, "YYYY-MM-DDTHH:mm");
+            }
+            if (!m.isValid()) {
+                this._value = null;
+            } else {
+                this._value = m.format("YYYY-MM-DDTHH:mm");
+            }}
+
+         _valueToText() {
+            return moment(this._value, "YYYY-MM-DDTHH:mm").format("DD.MM.YYYY HH:mm") }
+
+    };
+
     $ipe.InPlaceCheckBoxInput = class InPlaceCheckBoxInput extends $ipe.InPlaceTextInput {
         generateInputField() {
             let input = $("<input>")
@@ -492,10 +512,10 @@ let findByInDictField = function(arr, fieldName, value) {
             InputConstructor: $ipe.InPlaceTextInput },
         tel: {
             InputConstructor: $ipe.InPlaceTextInput },
-        'datetime-local': {
-            InputConstructor: $ipe.InPlaceTextInput },
         date: {
             InputConstructor: $ipe.InPlaceDateInput },
+        'datetime-local': {
+            InputConstructor: $ipe.InPlaceDateTimeInput },
         // month: {
         //     InputConstructor: $ipe.InPlaceTextInput },
         // week: {
