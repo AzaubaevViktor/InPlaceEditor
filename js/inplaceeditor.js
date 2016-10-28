@@ -486,7 +486,8 @@ let findByInDictField = function(arr, fieldName, value) {
         size: "sm", // Размер элементов
         emptyText: "Empty",
         url: null, // URL, куда отсылать данные. заменяет собой dataHandle
-        dataHandle: data => {return new Promise((resolve) => {resolve()})}, // Обработчик данных. Должен возвращать promise
+        // Обработчик данных. Должен возвращать promise. Переопределяется url
+        dataHandle: data => {return new Promise((resolve) => {resolve()})},
         submit: data => {}, // Обрабатывает данные, которые вернёт dataHandle
         dismiss: data => {}, // Вызывается в случае отмены редактирования
         ajax: {
