@@ -42,8 +42,7 @@ let findByInDictField = function(arr, fieldName, value) {
         // Иницализация функции, передающей данные на сервер
         if (null != options.url) {
             options.dataHandle = data => {
-                let ajaxOpt = $.extend({data: JSON.stringify(data), url: options.url}, options.ajax);
-                return $.ajax(ajaxOpt)
+                return options.ajaxSender(options, data)
             };
         }
 
@@ -60,7 +59,7 @@ let findByInDictField = function(arr, fieldName, value) {
 
         let disableInputs = () => {
             this.inPlaceInput.inputField.prop('disabled', true);
-            this.inPlaceInput.inputForm.find("inplace-submit").prop('disabled', true);
+            this.inPlaceInput.inputForm.find("#inplace-submit").prop('disabled', true).off();
             $(document).off(".inPlace");
         };
 
@@ -321,7 +320,7 @@ let findByInDictField = function(arr, fieldName, value) {
                 this._value = m.format("YYYY-MM-DDTHH:mm");
             }}
 
-         _valueToText() {
+        _valueToText() {
             return moment(this._value, "YYYY-MM-DDTHH:mm").format("DD.MM.YYYY HH:mm") }
 
     };
@@ -485,9 +484,13 @@ let findByInDictField = function(arr, fieldName, value) {
         value: null, // Значение поля
         size: "sm", // Размер элементов
         emptyText: "Empty",
-        url: null, // URL, куда отсылать данные. заменяет собой dataHandle
+        url: null, // URL, куда отсылать данные. заменяет dataHandle, используя ajaxSender
         // Обработчик данных. Должен возвращать promise. Переопределяется url
         dataHandle: data => {return new Promise((resolve) => {resolve()})},
+        ajaxSender: (opts, data) => {
+            let ajaxOpt = $.extend({data: JSON.stringify(data), url: opts.url}, opts.ajax);
+            return $.ajax(ajaxOpt)
+        }, // Отправляет ajax запрос, используется, если есть url. Возвращает Promise
         submit: data => {}, // Обрабатывает данные, которые вернёт dataHandle
         dismiss: data => {}, // Вызывается в случае отмены редактирования
         ajax: {
