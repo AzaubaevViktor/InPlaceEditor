@@ -106,7 +106,10 @@ let findByInDictField = function(arr, fieldName, value) {
                 updateText();
                 this.state = !this.state;
 
-                options.submit(data);
+                options.submit(data, {
+                    'raw': this.inPlaceInput._value,
+                    'value': this.inPlaceInput.value
+                });
             }).catch((error) => {
                 // Всё плохо
                 console.error(error);
@@ -491,7 +494,7 @@ let findByInDictField = function(arr, fieldName, value) {
             let ajaxOpt = $.extend({data: JSON.stringify(data), url: opts.url}, opts.ajax);
             return $.ajax(ajaxOpt)
         }, // Отправляет ajax запрос, используется, если есть url. Возвращает Promise
-        submit: data => {}, // Обрабатывает данные, которые вернёт dataHandle
+        submit: (data, values) => {}, // Обрабатывает данные, которые вернёт dataHandle
         dismiss: data => {}, // Вызывается в случае отмены редактирования
         ajax: {
             contentType: 'application/json',
