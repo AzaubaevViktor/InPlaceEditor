@@ -294,11 +294,15 @@ let findByInDictField = function(arr, fieldName, value) {
             return super.value }
 
         set value(newVal) {
-            let m = moment(newVal, "DD.MM.YYYY");
-            if (!m.isValid()) {
-                m = moment(newVal, "YYYY-MM-DD");
+            let m = null;
+            if (newVal) {
+                if (newVal.indexOf(".") !== -1) {
+                    m = moment(newVal, "DD.MM.YYYY");
+                } else {
+                    m = moment(newVal);
+                }
             }
-            if (!m.isValid()) {
+            if (null === m || !m.isValid()) {
                 this._value = null;
             } else {
                 this._value = m.format("YYYY-MM-DD");
@@ -313,11 +317,15 @@ let findByInDictField = function(arr, fieldName, value) {
             return super.value }
 
         set value(newVal) {
-            let m = moment(newVal, "DD.MM.YYYY HH:mm");
-            if (!m.isValid()) {
-                m = moment(newVal, "YYYY-MM-DDTHH:mm");
+            let m = null;
+            if (newVal) {
+                if (newVal.indexOf(".") !== -1) {
+                    m = moment(newVal, "DD.MM.YYYY HH:mm");
+                } else {
+                    m = moment(newVal, "YYYY-MM-DDTHH:mm");
+                }
             }
-            if (!m.isValid()) {
+            if (null === m || !m.isValid()) {
                 this._value = null;
             } else {
                 this._value = m.format("YYYY-MM-DDTHH:mm");
