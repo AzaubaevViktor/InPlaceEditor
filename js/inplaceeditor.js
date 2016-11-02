@@ -14,6 +14,7 @@ let findByInDictField = function(arr, fieldName, value) {
     "use strict";
     const STATE_DISABLE = false;
     const STATE_ENABLE = true;
+
     $.fn.inPlace = function (action) {
         let options = $.extend(true, {id: this.attr('id')}, $ipe.defaults);
         // Initialization
@@ -58,20 +59,23 @@ let findByInDictField = function(arr, fieldName, value) {
         updateText();
 
         let disableInputs = () => {
+            console.log("Disable inputs");
             this.inPlaceInput.inputField.prop('disabled', true);
-            this.inPlaceInput.inputForm.find("#inplace-submit").prop('disabled', true).off();
+            this.inPlaceInput.inputForm.off(".inPlace").find("#inplace-submit").prop('disabled', true);
+            this.inPlaceInput.inputForm.find("#inplace-submit").off(".inPlace");
             $(document).off(".inPlace");
         };
 
         let enableInputs = () => {
+            console.log("Enable inputs");
             this.inPlaceInput.inputField.prop('disabled', false).addClass("form-control-danger");
 
-            $(document).on('mousedown.inPlace', document, (e) => {
+            $(document).on('mousedown.inPlace', (e) => {
                 let container = this.inPlaceInput.inputForm;
                 // Проверяем, куда нажали
                 if (!container.is($(e.target))
                     && container.has($(e.target)).length === 0
-                    && container.find(`#${$(e.target).attr("id")}`).length == 0
+                    && container.find(`#${$(e.target).attr("id")}`).length === 0
                 ) {
                     dismiss() }
             });
@@ -79,16 +83,12 @@ let findByInDictField = function(arr, fieldName, value) {
                 submit();
                 return false });
 
-            this.inPlaceInput.inputForm.on('keyup.inPlace', e => {
-                if (this.inPlaceInput.checkSubmitKeys(e)) {
-                    submit();
-                } else if (this.inPlaceInput.checkDismissKeys(e)) {
-                    dismiss() }
-                return false });
+            this.inPlaceInput.inputForm.on('keyup.inPlace', this, $.fn.inPlace._keyUpInputHandler);
         };
 
-        let submit = () => {
-            $(document).off(".inPlace");
+        let submit = this.submit = () => {
+            console.log("Submit");
+            disableInputs();
             this.inPlaceInput.updateValue();
             let value = this.inPlaceInput.value;
             console.log(`Submit with ${value}`);
@@ -96,8 +96,6 @@ let findByInDictField = function(arr, fieldName, value) {
                 name: options.id,
                 value,
                 pk: options.pk };
-
-            disableInputs();
 
             options.dataHandle(data).then((response) => {
                 // Всё ок
@@ -119,7 +117,7 @@ let findByInDictField = function(arr, fieldName, value) {
             })
         };
 
-        let dismiss = () => {
+        let dismiss = this.dismiss = () => {
             console.log("Dismiss");
             disableInputs();
             this.inPlaceInput.dismiss();
@@ -152,6 +150,18 @@ let findByInDictField = function(arr, fieldName, value) {
     };
 
     let $ipe = $.fn.inPlace;
+
+    $ipe._keyUpInputHandler = function(event) {
+        let inPlaceInput = event.data.inPlaceInput;
+        let submit = event.data.submit;
+        let dismiss = event.data.dismiss;
+
+        if (inPlaceInput.checkSubmitKeys(event)) {
+            submit();
+        } else if (inPlaceInput.checkDismissKeys(event)) {
+            dismiss() }
+        return false
+    };
 
     $ipe.InPlaceInput = class InPlaceInput {
         constructor(options) {
